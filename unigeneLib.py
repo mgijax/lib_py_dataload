@@ -100,11 +100,11 @@ Options: (command-line test mode only)
 # IMPORTS:
 #-----------
 import string, sys, os
-import mgdlib		# , accessionLoadUtils
+import db, mgi_utils		# , accessionLoadUtils
 from types import *
 
 # local aliases:
-sql = mgdlib.sql
+sql = db.sql
 ## DBLookUp = accessionLoadUtils.DBLookUp
 
 
@@ -155,8 +155,11 @@ def init ( ugFile, retrieve=-1, loadFilter=None ):
     #------------------------------------------------------------------
 
     global ug, mgiSids 
-    
 
+    # don't reinitialize
+    if ug and mgiSids:
+	return
+    
     ug = UniGeneSIDs()
     mgiSids = MGI_SIDs()
 
@@ -201,6 +204,33 @@ def init ( ugFile, retrieve=-1, loadFilter=None ):
 
     return
 
+
+def findCommonSIDs ( clusterList ):
+    #------------------------------------------------------------------
+    # INPUTS:
+    #    clusterList : List of Cluster IDs (strings)
+    # OUTPUTS:  List of Seq IDs that are common to all clusters in list
+    #  
+    # ASSUMES: 	
+    # SIDE EFFECTS: 
+    # EXCEPTIONS: 
+    # COMMENTS:  
+    #------------------------------------------------------------------
+
+    common = ug.getSIDsForUid ( clusterList[0] )
+
+    # for each subsequent cluster ID
+    for cluster in clusterList[1:]:
+	clusterSIDs = ug.getSIDsForUid ( cluster )
+	# for each sid still in the common list
+	# since we may alter the list, step over a copy
+	for sid in common[:]:
+	    # if it doesn't appear in this cluster's list...
+	    if sid not in clusterSIDs:
+		# remove it from the common list
+		common.remove ( sid )
+
+    return common
 
 
 def ftpFileWriter ( block ):
@@ -312,7 +342,7 @@ def getPutativeGenes ( sid ):
 
 	for ugsid in ugSIDs:
 
-	    genes = mgiSids.getMGIinfo ( ugsid )
+	    genes = mgiSids.getMGIinfo ( ugsid, 1 )
 	    if genes:
 		for info in genes:
 		    # more than 1 SID can produce same geneInfo
@@ -379,6 +409,7 @@ class UniGeneSIDs:
     # getClusterIDs () : list of cluster ID keys in the assoc. data struct.
     # getClustersForSID ( sid ) : list of cluster ID(s) for this sid
     # getSIDs () : list of unique SIDs in the associative data structure
+    # getSIDsForUid ( UniGeneCluster_ID ) : list of SIDs
     # length ()  : string -- debugging; shows counts for the two dictionaries
     # load ( fd:FILE ) -- loads data structure from specified file
     #
@@ -590,10 +621,15 @@ class MGI_SIDs:
     #                  related information (markerKey, symbol, MGI_ID?,...?)
     #  _sids2Markers : dictionary of list of marker info record references
     #                  keyed by SID
+    #  _markers2sids : dictionary of list of SIDs keyed by marker symbol
     #
     # METHODS:
     # (PUBLIC)
-    #  getMGIinfo ( sid ) : List (elements are the desired marker info)
+    #  getMGIinfo ( sid, oneToOneFlag ) : List (elements are the desired
+    #                                           marker info)
+    #  getMGIkeys () : List of _Marker_key values in _markerInfo dictionary.
+    #  getSIDkeys () : List of SID values in _sids2Markers.
+    #  getSIDsForMarker ( s ) : list of SIDs for the symbol
     #  length () : string -- debugging; message w/ # entries in the dict.
     #  load ( MarkerFilterTuple : (boolean, List of strings) --
     #             gets SID-marker information from default MGD instance;
@@ -619,16 +655,26 @@ class MGI_SIDs:
     # CLASS CONSTANTS:
     MARKERPOS = 0		# tuple-position of marker key
     SYMBOLPOS = 1		# tuple-position of marker symbol
+
+    # field names associated with these positions
+    FLDLIST = [None, None]
+    FLDLIST[MARKERPOS] = "_MARKER_KEY"
+    FLDLIST[SYMBOLPOS] = "SYMBOL"
     
     def __init__ ( self ):
 	self._sids2Markers = {}
 	self._markerInfo   = {}
+	self._markers2sids = {}
 	return
 
-    def getMGIinfo ( self, sid ):
+    def getMGIinfo ( self, sid, oneToOne=1, field=None ):
 	#------------------------------------------------------------------
-	# INPUTS: sid : string
-	# OUTPUTS: List of Marker-Info Lists
+	# INPUTS:
+	#    sid      : string -- Seq. ID for requesting marker info for.
+	#    oneToOne : boolean -- whether only sids that associate with
+	#                        a single marker should be returned.
+	#    field    : string | None -- which field to return
+	# OUTPUTS: List of ( Marker-Info Lists, or elements from this list )
 	# ASSUMES: 	
 	# SIDE EFFECTS: 
 	# EXCEPTIONS: 
@@ -638,10 +684,58 @@ class MGI_SIDs:
 	#   should not use the list reference to alter the contents of
 	#   the list.
 	#------------------------------------------------------------------
-	data = []
+	_default = data = []
 	if self._sids2Markers.has_key (sid):
 	    data = self._sids2Markers[sid]
+	    if oneToOne and len ( data ) > 1:
+		data = _default
+		
+	    if field is not None:
+		fldPos = None
+		field = string.upper(field)
+		if field in self.FLDLIST:
+		    fldPos = self.FLDLIST.index ( field )
+		else:
+		    raise ValueError, " %s : field must be in %s." \
+			  % ( __class__, str(self.FLDLIST)[1:-1] )
+		d =[]
+		for rec in data:
+		    d.append ( rec [ fldPos ] )
+		data = d
 	return data
+
+
+    def getMGIkeys ( self ):
+	return self._markerInfo.keys()
+
+
+    def getSIDsForMarker ( self, symbol, oneToOne = 0 ):
+    #------------------------------------------------------------------
+    # INPUTS:
+    #   symbol : string
+    #   oneToOne : boolean -- filter out sids that associate w/ multiple genes
+    # OUTPUTS:
+    #   List of SIDs (strings) | None:
+    #       None -- if symbol not found in dictionary
+    #       []   -- if oneToOne causes removal of all SIDs
+    #       [sid,...] otherwise
+    # ASSUMES: 	
+    # SIDE EFFECTS: 
+    # EXCEPTIONS: 
+    # COMMENTS:  
+    #------------------------------------------------------------------
+	results = None
+	if self._markers2sids.has_key ( symbol ):
+	    results = self._markers2sids [ symbol ]
+	    if oneToOne:
+		for sid in results[:]:
+		    if len ( self._sids2markers[sid] ) > 1:
+			results.remove (sid)
+	return results
+    
+
+    def getSIDkeys ( self ):
+	return self._sids2Markers.keys()
     
 
     def length ( self ):
@@ -654,7 +748,7 @@ class MGI_SIDs:
 	#    markerTypeFilter : string or None
 	# OUTPUTS: none
 	# ASSUMES:
-	# - That mgdlib.sql() can access needed environment variables in order
+	# - That sql() can access needed environment variables in order
 	#   to determine a default server/database.
 	# SIDE EFFECTS: populates the class's primary, internal data members
 	#               from the default MGD instance.
@@ -675,10 +769,9 @@ class MGI_SIDs:
 			% str(typeList)[1:-1]
 			)
 		geneTypes = []
-		mgdlib.sql ( qry,
-			     lambda row, d=geneTypes:
-			     d.append ( row["_Marker_Type_key"] )
-			     )
+		sql ( qry, lambda row, d=geneTypes:
+		                  d.append ( row["_Marker_Type_key"] )
+		      )
 
 		if len (typeList) == 1:
 		    typeString = geneTypes[0]
@@ -749,6 +842,11 @@ class MGI_SIDs:
 		self._sids2Markers [sid].append ( info )
 	else:
 	    self._sids2Markers [sid] = [ info ]
+
+	if self._markers2sids.has_key ( symbol ):
+	    self._markers2sids[symbol].append (sid)
+	else:
+	    self._markers2sids[symbol] = [sid]
 	    
 	return
 
@@ -804,7 +902,7 @@ if __name__ == "__main__":
 	    print __doc__
 	    sys.exit (1)
 
-    print mgdlib.date(), "\n"
+    print mgi_utils.date(), "\n"
 
     # defaults files
     if ugfd is None and ugFile:
@@ -858,9 +956,6 @@ if __name__ == "__main__":
 		    marker = markerInfo[MGI_SIDs.MARKERPOS]
 		    symbol = markerInfo[MGI_SIDs.SYMBOLPOS]
 		    prbmrkr.write ( "%s|%s|\n" % (llnlID, marker) )
-##  		    print "IMAGE clone '%s'/ GenBank ID '%s'" \
-##  			  " gives putative to '%s' (%u) " \
-##  			  % ( llnlID, gbID, symbol, marker )
 
 	line = dbESTfd.readline()
 
