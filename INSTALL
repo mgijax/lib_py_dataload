@@ -1,11 +1,5 @@
 There is no Install script for this product.  
 
-
-At run time, some of these  python libraries  must be able to find
-these standard MGI libraries:
-	  mgdlib
-
-
 The python libraries  assume that the PYTHONPATH environment variable
 will include the path to the directory for this MGI-standard library. 
 
