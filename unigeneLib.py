@@ -632,8 +632,8 @@ class MGI_SIDs:
     #
     # METHODS:
     # (PUBLIC)
-    #  getMGIinfo ( sid, oneToOneFlag ) : List (elements are the desired
-    #                                           marker info)
+    #  getMGIinfo ( sid, oneToOneFlag, [fldname] ) : List (
+    #                     elements are the desired marker info)
     #  getMGIkeys () : List of _Marker_key values in _markerInfo dictionary.
     #  getSIDkeys () : List of SID values in _sids2Markers.
     #  getSIDsForMarker ( s ) : list of SIDs for the symbol

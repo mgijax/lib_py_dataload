@@ -478,12 +478,13 @@ class BCPWrite:
 	#   bcpFileName : string -- name of bcp file (optional if object
 	#                           knows its file's name.
 	# OUTPUTS:
+	#   returns the number of rows written to the BCPfile
 	# ASSUMES:
 	# - that bcp utility is available w/o a specific path
 	# SIDE EFFECTS:
 	# -  transfers contents of the bcp file to the specified table.
 	# EXCEPTIONS:
-	# - raises BCPWrite.error if cannot find a bcp file, errors in load
+	# - raises BCPWrite.error if cannot find a bcp file, or errors in load
 	# COMMENTS:
 	# - It is not possible to guarantee that we've caught all load  errors
 	#   since bcp does not return any error code when it fails for any 
