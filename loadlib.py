@@ -326,7 +326,7 @@ def verifyUser(
     global userDict
 
     if len(userDict) == 0:
-        results = db.sql('select _User_key, login from MGI_User_Active_View', 'auto')
+        results = db.sql('select _User_key, login from MGI_User', 'auto')
         for r in results:
             userDict[r['login']] = r['_User_key']
 
@@ -370,6 +370,9 @@ def verifyMarkerType(
     return markerTypeKey
 
 # $Log$
+# Revision 1.7  2004/02/04 14:00:21  lec
+# JSAM
+#
 # Revision 1.6  2004/01/14 20:22:26  lec
 # fix logicalDBDict
 #
@@ -383,6 +386,9 @@ def verifyMarkerType(
 # new
 #
 # $Log$
+# Revision 1.7  2004/02/04 14:00:21  lec
+# JSAM
+#
 # Revision 1.6  2004/01/14 20:22:26  lec
 # fix logicalDBDict
 #
