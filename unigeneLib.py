@@ -701,7 +701,8 @@ class MGI_SIDs:
 	qryF = 'from ACC_Accession a, MRK_Marker m '
 	qryW = 'where a._MGIType_key = 2 ' + \
 	       'and a._LogicalDB_key = %u ' % (SEQDB) + \
-	       'and a._Object_key = m._Marker_key'
+	       'and a._Object_key = m._Marker_key ' + \
+	       'and m._Organism_key = 1'
 
 	if markerType:
 	    qryF = qryF + ', MRK_Types t '
