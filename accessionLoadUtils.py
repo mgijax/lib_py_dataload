@@ -80,7 +80,7 @@
 #
 #     NOTES: 
 #     1). This was written prior to Geoff's improvements to sybaselib, and has
-#     not yet been modified to handle any raised exceptions; it depends on mgdlib 
+#     not yet been modified to handle any raised exceptions; it depends on db 
 #     which could manage that for us.
 #
 #     2). In all 4 classes I decided to implement the data as instance 
@@ -261,11 +261,11 @@
 # accSplit () : my version of a parser for accession numbers.  
 #   Good candidate for consolidation with the standard accession library.
 #
-# sql (): wrapper for mgdlib.sql() that saves & restores login params
+# sql (): wrapper for db.sql() that saves & restores login params
 #----------------------------------------------------------------------
 # DEPENDENCIES:
 #----------------------------------------------------------------------
-#    mgdlib.py (standard sybase access w/ sql() capability.)
+#    db.py (standard sybase access w/ sql() capability.)
 #
 #----------------------------------------------------------------------
 # EXAMPLES (both simplistic):
@@ -343,6 +343,8 @@
 #----------------------------------------------------------------------
 # MODIFICATIONS:
 #----------------------------------------------------------------------
+#   01/12/2000 rpp:
+#     - switched from mgdlib to db.py for sql()
 #   12/17/1999 rpp:
 #     - Corrections to class DBTranslationTable documentation
 #   12/10/1999 rpp:
@@ -369,7 +371,7 @@
 import regex, string, sys
 from types import *
 
-import mgdlib
+import db
 
 # Module Globals:
 # single instances of desired classes; initialized by init()
@@ -1706,17 +1708,17 @@ def accSplit ( s ):
 
 
 def sql (qry, server=None, database=None, user=None, password=None ):
-    """provides a login save way of running query using mgdlib
+    """provides a login safe way of running query using db
     """
     #--------------------------------------------------
     # INPUTS:     
-    #   qry : string or list of strings, pass-thru to mgdlib.sql()
+    #   qry : string or list of strings, pass-thru to db.sql()
     #   user : (optional) string
     #   password : (optional) string
     #   database : (optional) string
     #   server : (optional) string
     # OUTPUTS:     
-    #   returns results from mgdlib.sql() -- 
+    #   returns results from db.sql() -- 
     #       list of dictionary or list of lists of dictionaries
     # ASSUMES:     
     #   Login params should be either all None or all supplied.
@@ -1729,23 +1731,23 @@ def sql (qry, server=None, database=None, user=None, password=None ):
     #--------------------------------------------------
 
     if user is not None:
-	oldLogin = mgdlib.set_sqlLogin (user, password, server, database)
+	oldLogin = db.set_sqlLogin (user, password, server, database)
     else:
 	oldLogin = None
 
 
     try:
-	qResults = mgdlib.sql (qry, 'auto')
+	qResults = db.sql (qry, 'auto')
     except:
 	if oldLogin:
 	    # restore to original values
-	    apply ( mgdlib.set_sqlLogin, oldLogin )
+	    apply ( db.set_sqlLogin, oldLogin )
 	# pass the exception on up
 	raise sys.exc_type, sys.exc_value, sys.exc_traceback
     else:
 	if oldLogin:
 	    # restore to original values
-	    apply ( mgdlib.set_sqlLogin, oldLogin )
+	    apply ( db.set_sqlLogin, oldLogin )
 
     return qResults
 
