@@ -1,3 +1,10 @@
+TAG: lib_py_dataload-1-0-4
+DATE: 09/29/2003
+STAFF: lec
+RELEASE: Prime-time
+CHANGES:
+1) gxdloadlib, loadlib, mappingloadlib, nomenloadlib, sourceloadlib, vocabloadlib
+
 TAG: lib_py_dataload-1-0-3
 DATE: 02/10/2000
 STAFF: rpp
