@@ -92,6 +92,10 @@ Options: (command-line test mode only)
 #
 #---------------------------------------------------------------------------
 # MODIFICATIONS:
+# 01/21/2000 rpp:
+# - made all sid accesses case insensitive (loading and retrieving)
+# 01/20/2000 rpp:
+# - Added getSymbols(), and getInfoByKey() to MGI_SIDs class.
 #
 ############################################################################
 
@@ -105,7 +109,6 @@ from types import *
 
 # local aliases:
 sql = db.sql
-## DBLookUp = accessionLoadUtils.DBLookUp
 
 
 ############
@@ -332,7 +335,7 @@ def getPutativeGenes ( sid ):
     #------------------------------------------------------------------
 
     putatives = None
-    ugSIDs = ug.getAssociatedSIDs ( sid )
+    ugSIDs = ug.getAssociatedSIDs ( string.upper ( sid ) )
     
     if ugSIDs:
 	putatives = []
@@ -458,7 +461,7 @@ class UniGeneSIDs:
 	#------------------------------------------------------------------
 
 	sids = []
-	uids = self.getClustersForSID ( sid )
+	uids = self.getClustersForSID ( string.upper ( sid ) )
 	if len(uids) == 1:
 	    sids = self.getSIDsForUid ( uids[0] )
 	elif not uniqueCluster and len(uids) > 1:
@@ -494,6 +497,7 @@ class UniGeneSIDs:
 	#   should not use the list reference to alter the contents of
 	#   the list.
 	#------------------------------------------------------------------
+	sid = string.upper ( sid )
 	if self._sid2Clusters.has_key ( sid ):
 	    return self._sid2Clusters [ sid ]
 
@@ -552,6 +556,8 @@ class UniGeneSIDs:
 	rec = self.readRecord (fd)
 	while rec:
 	    (ugid, seqList) = rec
+	    # convert each entry to force all upper case.
+	    seqList = map ( string.upper, seqList )
 	    
 	    # SIDs might be in more than one cluster ...
 	    for sid in seqList[:]:
@@ -632,15 +638,18 @@ class MGI_SIDs:
     #
     # METHODS:
     # (PUBLIC)
+    #  getInfoByKey ( mKey ) : LIST of marker info
     #  getMGIinfo ( sid, oneToOneFlag, [fldname] ) : List (
     #                     elements are the desired marker info)
     #  getMGIkeys () : List of _Marker_key values in _markerInfo dictionary.
     #  getSIDkeys () : List of SID values in _sids2Markers.
     #  getSIDsForMarker ( s ) : list of SIDs for the symbol
+    #  getSymbols () : List of symbols in _markers2sids
     #  length () : string -- debugging; message w/ # entries in the dict.
-    #  load ( MarkerFilterTuple : (boolean, List of strings) --
+    #  load ( MarkerFilterTuple : (boolean, list of strings) ) --
     #             gets SID-marker information from default MGD instance;
-    #             populating the class's dictionary with (_Marker_key, symbol)
+    #             populating the class's dictionary
+    #             ( _Marker_key, symbol, markerType )
     #             entries keyed by SID.
     # (PRIVATE)
     # sidParser (row:Dict) -- parser function for load()'s SQL query.
@@ -657,11 +666,16 @@ class MGI_SIDs:
     # ASSUMES:
     #
     # MODIFICATIONS:
+    # prior to 2/10/1999 rpp:
+    # - added addtional accessor methods: getInfoByKey(), getSymbols().
+    # - made SID comparisons case-insensitive
+    # 
     #######################################################################
 
     # CLASS CONSTANTS:
     MARKERPOS = 0		# tuple-position of marker key
     SYMBOLPOS = 1		# tuple-position of marker symbol
+##      TYPEPOS   = 2
 
     # field names associated with these positions
     FLDLIST = [None, None]
@@ -673,6 +687,11 @@ class MGI_SIDs:
 	self._markerInfo   = {}
 	self._markers2sids = {}
 	return
+
+
+    def getInfoByKey ( self, mkey ):
+	return self._markerInfo [ mkey ][:]
+
 
     def getMGIinfo ( self, sid, oneToOne=1, field=None ):
 	#------------------------------------------------------------------
@@ -692,6 +711,7 @@ class MGI_SIDs:
 	#   the list.
 	#------------------------------------------------------------------
 	_default = data = []
+	sid = string.upper ( sid )
 	if self._sids2Markers.has_key (sid):
 	    data = self._sids2Markers[sid]
 	    if oneToOne and len ( data ) > 1:
@@ -715,6 +735,10 @@ class MGI_SIDs:
     def getMGIkeys ( self ):
 	return self._markerInfo.keys()
 
+
+    def getSIDkeys ( self ):
+	return self._sids2Markers.keys()
+    
 
     def getSIDsForMarker ( self, symbol, oneToOne = 0 ):
     #------------------------------------------------------------------
@@ -741,9 +765,18 @@ class MGI_SIDs:
 	return results
     
 
-    def getSIDkeys ( self ):
-	return self._sids2Markers.keys()
-    
+    def getSymbols ( self ):
+	#------------------------------------------------------------------
+	# INPUTS:
+	# OUTPUTS: List of symbols for which we have SID-Marker Info
+	# ASSUMES: 	
+	# SIDE EFFECTS: 
+	# EXCEPTIONS: 
+	# COMMENTS:  
+	#------------------------------------------------------------------
+	results = self._markers2sids.keys()
+	return results
+
 
     def length ( self ):
 	return "SID keys %u" % len(self._sids2Markers)
@@ -806,10 +839,13 @@ class MGI_SIDs:
 	# for significant marker info
 	qry = ( "select distinct symbol, sid = accID, "
 		"_Marker_key = _Object_key "
+##  		", type=t.name "
+##  		"from ACC_Accession a, MRK_Marker m, MRK_Type t "
 		"from ACC_Accession a, MRK_Marker m "
 		"where _LogicalDB_key = %u "
 		" and _MGIType_key = 2 "
 		" and _Marker_key = _Object_key "
+##  		" and m._Marker_Type_key = t._Marker_Type_key"
 		% SEQDB
 		)
 
@@ -825,14 +861,18 @@ class MGI_SIDs:
 	#------------------------------------------------------------------
 	# INPUTS:  Dict -- SQL-tuple from query result set
 	# OUTPUTS: none
-	# ASSUMES: 	
+	# ASSUMES:
+ 	# - query results contain expected columns
+	#
 	# SIDE EFFECTS: inserts/appends marker info to dict data member.
 	# EXCEPTIONS: 
 	# COMMENTS:  
 	#------------------------------------------------------------------
-	sid    = row["sid"]
+	sid       = string.upper ( row["sid"] )
 	markerKey = row["_Marker_key"]
-	symbol = row["symbol"]
+	symbol    = row["symbol"]
+##  	mtype     = string.upper ( row["type"] )
+##  	info = [ markerKey, symbol, mtype ]
 	info = [ markerKey, symbol ]
 
 	# same unique copies of the marker info record
