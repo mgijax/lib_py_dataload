@@ -40,13 +40,44 @@ import accessionlib
 
 #globals
 
+logicalDBDict = {}	# logical DB
 markerDict = {}      	# markers
 objectDict = {}		# objects
 probeDict = {}		# probes
 referenceDict = {}      # references
 userDict = {}		# users
+markerTypeDict = {}	# marker types
 
 loaddate = mgi_utils.date('%m/%d/%Y')	# current date
+
+# Purpose: verifies the Logical DB value
+# Returns: 0 if the Logical DB value does not exist in MGI
+#          else the primary key of the Logical DB
+# Assumes: nothing
+# Effects: initializes the Logical DB dictionary for quicker lookup
+# Throws: nothing
+
+def verifyLogicalDB(
+    logicalDB,   # the Logical DB value from the input file (string)
+    lineNum,     # the line number (from the input file) on which this value was found (integer)
+    errorFile    # error file
+    ):
+
+    global logicalDBDict
+
+    if len(logicalDBDict) == 0:
+        results = db.sql('select _LogicalDB_key, name from ACC_LogicalDB', 'auto')
+        for r in results:
+            logicalDBDict[r['name']] = r['_LogicalDB_key']
+
+    if logicalDict.has_key(logicalDB):
+        logicalDBKey = logicalDBDict[logicalDB]
+    else:
+	if errorFile != None:
+            errorFile.write('Invalid Logical DB (%d): %s\n' % (lineNum, logicalDB))
+        logicalDBKey = 0
+
+    return logicalDBKey
 
 # Purpose:  verify Marker Accession ID
 # Returns:  Marker Key if Marker is valid, else 0
@@ -209,12 +240,46 @@ def verifyUser(
     if userDict.has_key(userID):
         userKey = userDict[userID]
     else:
-        errorFile.write('Invalid User (%d): %s\n' % (lineNum, userID))
+	if errorFile != None:
+            errorFile.write('Invalid User (%d): %s\n' % (lineNum, userID))
         userKey = 0
 
     return userKey
 
+# Purpose:  verify Marker Type
+# Returns:  Marker Type key if valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Marker Type exists in the markerType dictionary
+#	writes to the error file if the Marker Type is invalid
+# Throws:  nothing
+
+def verifyMarkerType(
+    markerType, 	  # Marker Type value (string)
+    lineNum,	  # line number (integer)
+    errorFile	   # error file (file descriptor)
+    ):
+
+    global markerTypeDict
+
+    markerTypeKey = 0
+
+    if len(markerTypeDict) == 0:
+        results = db.sql('select _Marker_Type_key, name from MRK_Types', 'auto')
+	for r in results:
+	    markerTypeDict[r['name']] = r['_Marker_Type_key']
+
+    if markerTypeDict.has_key(markerType):
+        markerTypeKey = markerTypeDict[markerType]
+    else:
+        errorFile.write('Invalid Marker Type (%d): %s\n' % (lineNum, markerType))
+
+    return markerTypeKey
+
 # $Log$
+# $Log$
+# Revision 1.2  2003/09/24 17:35:25  lec
+# new
+#
 # Revision 1.1  2003/09/23 19:44:16  lec
 # new
 #
