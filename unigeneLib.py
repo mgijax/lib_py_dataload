@@ -785,7 +785,7 @@ class MGI_SIDs:
     def load ( self, markerTypeTuple ):
 	#------------------------------------------------------------------
 	# INPUTS:
-	#    markerTypeFilter : string or None
+	#    markerTypeTuple : (boolean, PythonList of strings(types)) or None
 	# OUTPUTS: none
 	# ASSUMES:
 	# - That sql() can access needed environment variables in order
