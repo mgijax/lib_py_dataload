@@ -314,7 +314,7 @@ def verifyVectorType(
     global vectorTypeDict
 
     if len(vectorTypeDict) == 0:
-        results = db.sql('select _Vector_key, vectorType from PRB_VectorTypes ', 'auto')
+        results = db.sql('select _Vector_key, vectorType from PRB_Vector_Types ', 'auto')
         for r in results:
             vectorTypeDict[r['vectorType']] = r['_Vector_key']
 
@@ -326,6 +326,9 @@ def verifyVectorType(
         return 0
 
 # $Log$
+# Revision 1.4  2004/01/14 20:23:56  lec
+# fix
+#
 # Revision 1.3  2004/01/14 20:23:38  lec
 # fix
 #
