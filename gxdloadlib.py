@@ -33,9 +33,7 @@
 
 import sys
 import os
-import string
 import db
-import mgi_utils
 import accessionlib
 
 #globals
@@ -89,7 +87,8 @@ def verifyAssayType(
     if assayTypeDict.has_key(assayType):
         assayTypeKey = assayTypeDict[assayType]
     else:
-        errorFile.write('Invalid Assay Type (%d): %s\n' % (lineNum, assayType))
+	if errorFile != None:
+            errorFile.write('Invalid Assay Type (%d): %s\n' % (lineNum, assayType))
 
     return assayTypeKey
 
@@ -118,7 +117,8 @@ def verifyEmbeddingMethod(
     if embeddingDict.has_key(embedding):
         embeddingKey = embeddingDict[embedding]
     else:
-        errorFile.write('Invalid Embedding Method (%d): %s\n' % (lineNum, embedding))
+	if errorFile != None:
+            errorFile.write('Invalid Embedding Method (%d): %s\n' % (lineNum, embedding))
 
     return embeddingKey
 
@@ -147,7 +147,8 @@ def verifyFieldType(
     if fieldTypeDict.has_key(fieldType):
         fieldTypeKey = fieldTypeDict[fieldType]
     else:
-        errorFile.write('Invalid Field Type (%d): %s\n' % (lineNum, fieldType))
+	if errorFile != None:
+            errorFile.write('Invalid Field Type (%d): %s\n' % (lineNum, fieldType))
 
     return fieldTypeKey
 
@@ -176,7 +177,8 @@ def verifyFixationMethod(
     if fixationDict.has_key(fixation):
         fixationKey = fixationDict[fixation]
     else:
-        errorFile.write('Invalid Fixation (%d): %s\n' % (lineNum, fixation))
+	if errorFile != None:
+            errorFile.write('Invalid Fixation (%d): %s\n' % (lineNum, fixation))
 
     return fixationKey
 
@@ -205,7 +207,8 @@ def verifyGelRNAType(
     if gelRNATypeDict.has_key(gelRNAType):
         gelRNATypeKey = gelRNATypeDict[gelRNAType]
     else:
-        errorFile.write('Invalid Gel RNA Type (%d): %s\n' % (lineNum, gelRNAType))
+	if errorFile != None:
+            errorFile.write('Invalid Gel RNA Type (%d): %s\n' % (lineNum, gelRNAType))
 
     return gelRNATypeKey
 
@@ -234,7 +237,8 @@ def verifyGelControl(
     if gelControlDict.has_key(gelControl):
         gelControlKey = gelControlDict[gelControl]
     else:
-        errorFile.write('Invalid Gel Control (%d): %s\n' % (lineNum, gelControl))
+	if errorFile != None:
+            errorFile.write('Invalid Gel Control (%d): %s\n' % (lineNum, gelControl))
 
     return gelControlKey
 
@@ -263,7 +267,8 @@ def verifyGelUnits(
     if gelUnitsDict.has_key(gelUnits):
         gelUnitsKey = gelUnitsDict[gelUnits]
     else:
-        errorFile.write('Invalid Gel Units (%d): %s\n' % (lineNum, gelUnits))
+	if errorFile != None:
+            errorFile.write('Invalid Gel Units (%d): %s\n' % (lineNum, gelUnits))
 
     return gelUnitsKey
 
@@ -292,7 +297,8 @@ def verifyGelStrength(
     if gelStrengthDict.has_key(gelStrength):
         gelStrengthKey = gelStrengthDict[gelStrength]
     else:
-        errorFile.write('Invalid Gel Strength (%d): %s\n' % (lineNum, gelStrength))
+	if errorFile != None:
+            errorFile.write('Invalid Gel Strength (%d): %s\n' % (lineNum, gelStrength))
 
     return gelStrengthKey
 
@@ -319,7 +325,8 @@ def verifyGenotype(
     else:
         genotypeKey = accessionlib.get_Object_key(genotypeID, 'Genotype')
         if genotypeKey is None:
-            errorFile.write('Invalid Genotype (%d): %s\n' % (lineNum, genotypeID))
+	    if errorFile != None:
+                errorFile.write('Invalid Genotype (%d): %s\n' % (lineNum, genotypeID))
             genotypeKey = 0
         else:
             genotypeDict[genotypeID] = genotypeKey
@@ -344,7 +351,8 @@ def verifyHybridization(
     if hybridization in hybridizationList:
 	return 1
     else:
-        errorFile.write('Invalid Prep Type (%d): %s\n' % (lineNum, hybridization))
+	if errorFile != None:
+            errorFile.write('Invalid Prep Type (%d): %s\n' % (lineNum, hybridization))
         return 0
 
 # Purpose:  verify Index Assay
@@ -372,7 +380,8 @@ def verifyIdxAssay(
     if idxassayDict.has_key(idxassay):
         idxassayKey = idxassayDict[idxassay]
     else:
-        errorFile.write('Invalid Index Assay (%d): %s\n' % (lineNum, idxassay))
+	if errorFile != None:
+            errorFile.write('Invalid Index Assay (%d): %s\n' % (lineNum, idxassay))
 
     return idxassayKey
 
@@ -401,7 +410,8 @@ def verifyIdxPriority(
     if idxpriorityDict.has_key(idxpriority):
         idxpriorityKey = idxpriorityDict[idxpriority]
     else:
-        errorFile.write('Invalid Index Priority (%d): %s\n' % (lineNum, idxpriority))
+	if errorFile != None:
+            errorFile.write('Invalid Index Priority (%d): %s\n' % (lineNum, idxpriority))
 
     return idxpriorityKey
 
@@ -430,7 +440,8 @@ def verifyIdxStage(
     if idxstageDict.has_key(idxstage):
         idxstageKey = idxstageDict[idxstage]
     else:
-        errorFile.write('Invalid Index Stage (%d): %s\n' % (lineNum, idxstage))
+	if errorFile != None:
+            errorFile.write('Invalid Index Stage (%d): %s\n' % (lineNum, idxstage))
 
     return idxstageKey
 
@@ -459,7 +470,8 @@ def verifyPrepCoverage(
     if coverageDict.has_key(coverage):
         coverageKey = coverageDict[coverage]
     else:
-        errorFile.write('Invalid Prep Coverage (%d): %s\n' % (lineNum, coverage))
+	if errorFile != None:
+            errorFile.write('Invalid Prep Coverage (%d): %s\n' % (lineNum, coverage))
 
     return coverageKey
 
@@ -488,7 +500,8 @@ def verifyPrepLabel(
     if labelDict.has_key(label):
         labelKey = labelDict[label]
     else:
-        errorFile.write('Invalid Prep Label (%d): %s\n' % (lineNum, label))
+	if errorFile != None:
+            errorFile.write('Invalid Prep Label (%d): %s\n' % (lineNum, label))
 
     return labelKey
 
@@ -517,7 +530,8 @@ def verifyPrepSense(
     if senseDict.has_key(sense):
         senseKey = senseDict[sense]
     else:
-        errorFile.write('Invalid Prep Sense (%d): %s\n' % (lineNum, sense))
+	if errorFile != None:
+            errorFile.write('Invalid Prep Sense (%d): %s\n' % (lineNum, sense))
 
     return senseKey
 
@@ -539,7 +553,8 @@ def verifyPrepType(
     if prepType in prepTypeList:
 	return 1
     else:
-        errorFile.write('Invalid Prep Type (%d): %s\n' % (lineNum, prepType))
+	if errorFile != None:
+            errorFile.write('Invalid Prep Type (%d): %s\n' % (lineNum, prepType))
         return 0
 
 # Purpose:  verify Probe Prep Visualization
@@ -567,7 +582,8 @@ def verifyPrepVisualization(
     if visualDict.has_key(visualization):
         visualKey = visualDict[visualization]
     else:
-        errorFile.write('Invalid Prep Visualization (%d): %s\n' % (lineNum, visualization))
+	if errorFile != None:
+            errorFile.write('Invalid Prep Visualization (%d): %s\n' % (lineNum, visualization))
 
     return visualKey
 
@@ -596,7 +612,8 @@ def verifyStrength(
     if strengthDict.has_key(strength):
         strengthKey = strengthDict[strength]
     else:
-        errorFile.write('Invalid Strength (%d): %s\n' % (lineNum, strength))
+	if errorFile != None:
+            errorFile.write('Invalid Strength (%d): %s\n' % (lineNum, strength))
 
     return strengthKey
 
@@ -625,7 +642,8 @@ def verifyPattern(
     if patternDict.has_key(pattern):
         patternKey = patternDict[pattern]
     else:
-        errorFile.write('Invalid Pattern (%d): %s\n' % (lineNum, pattern))
+	if errorFile != None:
+            errorFile.write('Invalid Pattern (%d): %s\n' % (lineNum, pattern))
 
     return patternKey
 
@@ -654,7 +672,8 @@ def verifyReporterGene(
     if reporterGeneDict.has_key(reporterGene):
         reporterGeneKey = reporterGeneDict[reporterGene]
     else:
-        errorFile.write('Invalid Reporter Gene (%d): %s\n' % (lineNum, reporterGene))
+	if errorFile != None:
+            errorFile.write('Invalid Reporter Gene (%d): %s\n' % (lineNum, reporterGene))
 
     return reporterGeneKey
 
@@ -688,7 +707,8 @@ def verifyStructure(
 		'and t.stage = %s ' % (str(theilerStage)) + \
 		'and s.printName = "%s" ' % (structureName), 'auto')
         if len(results) == 0:
-            errorFile.write('Invalid Structure (%d): %s:%s\n' % (lineNum, structureName, theilerStage))
+	    if errorFile != None:
+                errorFile.write('Invalid Structure (%d): %s:%s\n' % (lineNum, structureName, theilerStage))
             structureKey = 0
         else:
 	    for r in results:
@@ -698,6 +718,9 @@ def verifyStructure(
     return structureKey
 
 # $Log$
+# Revision 1.3  2003/09/24 17:35:25  lec
+# new
+#
 # Revision 1.2  2003/09/23 19:48:11  lec
 # new
 #

@@ -104,7 +104,8 @@ def verifyMarker(
 
         for r in results:
             if r['_Object_key'] is None:
-                errorFile.write('Invalid Marker (%d) %s\n' % (lineNum, markerID))
+		if errorFile != None:
+                    errorFile.write('Invalid Marker (%d) %s\n' % (lineNum, markerID))
                 markerKey = 0
             else:
                 markerKey = r['_Object_key']
@@ -156,7 +157,8 @@ def verifyObject(
                 objectKey = r['_Object_key']
 
     if objectKey is None:
-        errorFile.write('Invalid Object (%d) %s\n' % (lineNum, objectID))
+	if errorFile != None:
+            errorFile.write('Invalid Object (%d) %s\n' % (lineNum, objectID))
         objectKey = 0
     else:
         objectDict[objectID] = objectKey
@@ -188,7 +190,8 @@ def verifyProbe(
 
         for r in results:
             if r['_Object_key'] is None:
-                errorFile.write('Invalid Mouse Probe (%d) %s\n' % (lineNum, probeID))
+		if errorFile != None:
+                    errorFile.write('Invalid Mouse Probe (%d) %s\n' % (lineNum, probeID))
                 probeKey = 0
             else:
                 probeKey = r['_Object_key']
@@ -217,7 +220,8 @@ def verifyReference(
     else:
         referenceKey = accessionlib.get_Object_key(referenceID, 'Reference')
         if referenceKey is None:
-            errorFile.write('Invalid Reference (%d): %s\n' % (lineNum, referenceID))
+	    if errorFile != None:
+                errorFile.write('Invalid Reference (%d): %s\n' % (lineNum, referenceID))
             referenceKey = 0
         else:
             referenceDict[referenceID] = referenceKey
@@ -271,12 +275,19 @@ def verifyMarkerType(
     if markerTypeDict.has_key(markerType):
         markerTypeKey = markerTypeDict[markerType]
     else:
-        errorFile.write('Invalid Marker Type (%d): %s\n' % (lineNum, markerType))
+	if errorFile != None:
+            errorFile.write('Invalid Marker Type (%d): %s\n' % (lineNum, markerType))
 
     return markerTypeKey
 
 # $Log$
+# Revision 1.3  2003/09/25 12:11:48  lec
+# new
+#
 # $Log$
+# Revision 1.3  2003/09/25 12:11:48  lec
+# new
+#
 # Revision 1.2  2003/09/24 17:35:25  lec
 # new
 #

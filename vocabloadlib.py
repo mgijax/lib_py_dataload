@@ -33,10 +33,7 @@
 
 import sys
 import os
-import string
 import db
-import mgi_utils
-import accessionlib
 
 #globals
 
@@ -72,9 +69,13 @@ def verifyEvidence(
     if ecodeDict.has_key(ecode):
         ecodeKey = ecodeDict[ecode]
     else:
-        errorFile.write('Invalid Evidence Code (%d): %s\n' % (lineNum, ecode))
+	if errorFile != None:
+            errorFile.write('Invalid Evidence Code (%d): %s\n' % (lineNum, ecode))
 
     return ecodeKey
 
 # $Log$
+# Revision 1.1  2003/09/24 17:35:26  lec
+# new
+#
 #
