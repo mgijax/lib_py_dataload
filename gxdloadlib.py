@@ -665,7 +665,7 @@ def verifyReporterGene(
     reporterGeneKey = 0
 
     if len(reporterGeneDict) == 0:
-	results = db.sql('select t._Term_key, t.term from VOC_Term_GXDReporterGene_View', 'auto')
+	results = db.sql('select _Term_key, term from VOC_Term_GXDReporterGene_View', 'auto')
 	for r in results:
 	    reporterGeneDict[r['term']] = r['_Term_key']
 
@@ -718,6 +718,9 @@ def verifyStructure(
     return structureKey
 
 # $Log$
+# Revision 1.4  2003/09/25 12:40:29  lec
+# new
+#
 # Revision 1.3  2003/09/24 17:35:25  lec
 # new
 #
