@@ -41,10 +41,12 @@ import accessionlib
 #globals
 
 logicalDBDict = {}	# logical DB
+mgiTypeDict = {}	# mgi type
 markerDict = {}      	# markers
 objectDict = {}		# objects
 probeDict = {}		# probes
 referenceDict = {}      # references
+termDict = {}		# terms
 userDict = {}		# users
 markerTypeDict = {}	# marker types
 
@@ -70,7 +72,7 @@ def verifyLogicalDB(
         for r in results:
             logicalDBDict[r['name']] = r['_LogicalDB_key']
 
-    if logicalDict.has_key(logicalDB):
+    if logicalDBDict.has_key(logicalDB):
         logicalDBKey = logicalDBDict[logicalDB]
     else:
 	if errorFile != None:
@@ -130,6 +132,35 @@ def verifyMarker(
 		markerDict[markerID] = markerKey
 
     return markerKey
+
+# Purpose: verifies the MGI Type value
+# Returns: 0 if the MGI Type value does not exist in MGI
+#          else the primary key of the MGI Type
+# Assumes: nothing
+# Effects: initializes the MGI Type dictionary for quicker lookup
+# Throws: nothing
+
+def verifyMGIType(
+    mgiType,	 # the MGI Type value from the input file (string)
+    lineNum,     # the line number (from the input file) on which this value was found (integer)
+    errorFile    # error file
+    ):
+
+    global mgiTypeDict
+
+    if len(mgiTypeDict) == 0:
+        results = db.sql('select _MGIType_key, name from ACC_MGIType', 'auto')
+        for r in results:
+            mgiTypeDict[r['name']] = r['_MGIType_key']
+
+    if mgiTypeDict.has_key(mgiType):
+        mgiTypeKey = mgiTypeDict[mgiType]
+    else:
+	if errorFile != None:
+            errorFile.write('Invalid MGI Type (%d): %s\n' % (lineNum, mgiType))
+        mgiTypeKey = 0
+
+    return mgiTypeKey
 
 # Purpose:  verify Object Accession ID
 # Returns:  Object Key if Object is valid, else 0
@@ -246,6 +277,53 @@ def verifyReference(
 
     return referenceKey
 
+# Purpose:  verify Term Accession ID
+# Returns:  Term Key if Term is valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Term exists either in the Term dictionary or the database
+#	by either the Term ID or the Term Description/Term Vocabulary
+#	writes to the error file if the Term is invalid
+#	adds the Term id and key to the Term dictionary if the Term is valid
+# Throws:  nothing
+
+def verifyTerm(
+    termID, 		# Accession ID of the Term (string)
+    vocabKey,		# Vocabulary key (string)
+    termDescription,	# Term description (string)
+    lineNum,		# line number (integer)
+    errorFile   	# error file descriptor
+    ):
+
+    global termDict
+
+    termKey = None
+
+    if len(termID) > 0 and termDict.has_key(termID):
+        return termDict[termID] 
+
+    elif len(termID) > 0:
+        results = db.sql('select a._Object_key from VOC_Term_Acc_View a ' + \
+            'where a.accID = "%s" ' % (termID), 'auto')
+
+        for r in results:
+            termKey = r['_Object_key']
+    else:
+        results = db.sql('select _Term_key from VOC_Term ' + \
+		'where term = "%s" ' % (termDescription) + \
+		'and _Vocab_key = %s' % (vocabKey), 'auto')
+
+        for r in results:
+            termKey = r['_Term_key']
+
+    if termKey is None:
+	if errorFile != None:
+            errorFile.write('Invalid Term (%d) %s\n' % (lineNum, termID))
+        termKey = 0
+    else:
+        termDict[termID] = termKey
+
+    return termKey
+
 def verifyUser(
     userID, 	# User ID (string)
     lineNum,	# line number (integer)
@@ -299,6 +377,9 @@ def verifyMarkerType(
     return markerTypeKey
 
 # $Log$
+# Revision 1.5  2003/09/25 13:04:45  lec
+# new
+#
 # Revision 1.4  2003/09/25 12:40:30  lec
 # new
 #
@@ -306,6 +387,9 @@ def verifyMarkerType(
 # new
 #
 # $Log$
+# Revision 1.5  2003/09/25 13:04:45  lec
+# new
+#
 # Revision 1.4  2003/09/25 12:40:30  lec
 # new
 #
