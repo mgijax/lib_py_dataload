@@ -34,17 +34,12 @@ rely on.
 The module's two data instances provide mapping/associations
 between UniGene cluster-associated SIDs with MGD mouse gene-associated SIDs.
 
-Module supports running in test mode.  It accepts command line options
-to override the default file names for the UniGene Cluster-SIDs and
-dbEST/WashU clone-putatives files.
-    
 Syntax:
 
 import unigeneLoad
 
 unigeneLoad.init ( <UniGeneInputFile>,    ## file name
-		   <retrvOption>,         ## -1, 0, 1 (see func hdr.)
-		   <MarkerTypeFilterTupe> ## ( boolean, [ GeneTypeNames ] )
+		   <MarkerType> 	  ## Marker Type
 		   )
 ...
 while line:
@@ -52,10 +47,6 @@ while line:
     putativeList = unigeneLoad.getPutativeGenes ( <SomeGenBankSID> )
     ...
 
-
-Options: (command-line test mode only)
- -i <clone-GenBankSID file name>
- -u <UniGene_Cluster-SIDs file name>
 """
 
 ############################################################################
@@ -74,10 +65,6 @@ Options: (command-line test mode only)
 #  keyword.  We are interested in only the UniGene Cluster ID ("ID") and
 #  the associated SIDs ("SEQUENCE" subfield "ACC=" -- subfield is semi-colon
 #  delimited.)
-#
-# Test Input data file (command-line test mode)
-#  A "|"-delimited text file consisting of the clone's IMAGE ID, WashU ID
-#  and the associated GenBank SID.
 #
 #---------------------------------------------------------------------------
 # PROCESSING -- what it does with the input:
@@ -104,32 +91,17 @@ Options: (command-line test mode only)
 # IMPORTS:
 #-----------
 import string, sys, os
-import db, mgi_utils		# , accessionLoadUtils
+import db
 from types import *
-
-# local aliases:
-sql = db.sql
-
 
 ############
 # CONSTANTS:
 #-----------
-NL      = "\n"
-TAB	= "\t"
 SEQDB	= 9			# _LogicalDB_key for Seq. DB
 
 ############
 # MODULE GLOBALS
 #-----------
-# Directory Path in which to look for the download file:
-gUGdir       = "repository/UniGene"
-# UniGene's FTP server:
-gUGftpServer = "ftp.ncbi.nlm.nih.gov"
-gUGZFileName = "Mm.data.Z"
-
-# used by callback function supplied to FTP.retrvbinary() 
-gUGftpFile   = None
-
 ug = None	# SID-cluster(s) associative ADT object
 mgiSids = None  # MGD GenBank-2-Markers object
 
@@ -137,14 +109,10 @@ mgiSids = None  # MGD GenBank-2-Markers object
 # MODULE PUBLIC FUNCTIONS
 #-----------
 
-def init ( ugFile, retrieve=-1, loadFilter=None ):
+def init ( ugFile, loadFilter=None ):
     #------------------------------------------------------------------
     # INPUTS:
     #   ugFile : None or string (FileName) OR FILE (already opened)
-    #   retrieve : -1, 0, 1 (-1 = never (do not download from UniGene)
-    #                         0 = if missing (download if file does not exist)
-    #                         1 = always download from UniGene regardless
-    #                             of whether file exists or not.
     #   loadFilter : pass through to MGI_SIDs.load()
     # OUTPUTS: none
     # ASSUMES: 	
@@ -176,13 +144,7 @@ def init ( ugFile, retrieve=-1, loadFilter=None ):
 	raise AttributeError,  \
 	      "%s.init(): must be file name or file object." % __name__
 
-    if retrieve == 1 or ( retrieve == 0 and not ugExists ):
-	# useExisting arg to getUGfile is opposite of retrieve value of 0 or 1:
-	ugfh = getUGfile ( ugFile, 0 )
-	if ugfh is None:
-	    raise IOError, "Cannot open UniGene input %s" % ugFile
-
-    elif ugFileArgType is StringType and ugExists:
+    if ugFileArgType is StringType and ugExists:
 	try:
 	    ugfh = open ( ugFile, "r" )
 	except IOError, msg:
@@ -194,7 +156,6 @@ def init ( ugFile, retrieve=-1, loadFilter=None ):
 	    raise IOError, msg
     elif ugFileArgType is FileType:
 	ugfh = ugFile
-
 
     # load available Unigene SID-Cluster associations
     ug.load ( ugfh )
@@ -232,94 +193,16 @@ def findCommonSIDs ( clusterList ):
 
     return common
 
-
-def ftpFileWriter ( block ):
-    #------------------------------------------------------------------
-    # Callback function for FTP instance.
-    # INPUTS: 	text block
-    # OUTPUTS: 	None
-    # ASSUMES: 	
-    # SIDE EFFECTS: 
-    # EXCEPTIONS: 
-    # COMMENTS:  
-    #------------------------------------------------------------------
-    gUGftpFile.write ( block )
-    return
-
-
-def getUGfile ( ugFilename, useExisting ):
-    #------------------------------------------------------------------
-    # INPUTS:  ugFilename : string -- path & file name for input file
-    #	       useExisting : boolean -- false downloads fresh copy from UniGene
-    # OUTPUTS: f : FILE obj or None	
-    # ASSUMES:
-    # - UniGene's ftp site is available and responsive
-    # - global varibles define the ftp site, path and file name
-    # - that desired compressed file available at UniGene ftp site
-    # - desired ftp file is actually in a compressed format (".Z")
-    # SIDE EFFECTS:
-    # - if downloads file, will overwrite an existing <ugFilename>.
-    # EXCEPTIONS: 
-    # COMMENTS:  
-    #------------------------------------------------------------------
-
-    global gUGftpFile				# for update
-    global gUGZFileName				# readonly
-    f = None
-    
-    if not useExisting:
-	
-	from ftplib import FTP, all_errors
-
-	# get the local path and root filename via os.path.split()
-	(localPath, ugfile) = os.path.split(ugFilename)
-	# form a pathed local file name
-	localZfile = os.path.join ( localPath, gUGZFileName )
-	# open a destination file for the ftp download
-	gUGftpFile = open ( localZfile, "w" )
-
-	# download the compressed file
-	ug = FTP ( gUGftpServer )
-	ug.login()				# anonymous
-	ug.cwd (gUGdir )
-	ug.retrbinary ( "RETR " + gUGZFileName ,	# compressed form
-			ftpFileWriter,		# writer callback function
-			10240	    # newer python does not require block size.
-			)
-	try:
-	    # polite request
-	    ug.quit()
-	except all_errors:
-	    # unilaterally terminate connection
-	    ug.close()
-	    
-	gUGftpFile.close()
-	gUGftpFile = None
-
-	# should protect the former copy & delete the former back up
-	# decompress the file, forcing overwrite of existing file 
-	os.system ( "uncompress -f %s" % localZfile )
-	# name it per input request; assumes that the uncompressed file
-	# name is less the .Z extension.
-	os.rename ( localZfile[:-2], ugFilename )
-
-    if os.path.isfile ( ugFilename ):
-	f = open ( ugFilename, "r" )
-    return f
-
-
-
 def getPutativeGenes ( sid ):
     #------------------------------------------------------------------
     # INPUTS: sid -- string
     # OUTPUTS:
-    #   None | List of Tuples ( _Marker_key, symbol ) that putatively
-    #   associate with the given SID.
+    #   None | Dictionary of _Marker_keys that putatively associate with the given SID.
     #   None indicates that there are no associated SIDs for the given SID;
     #        i.e., there's no UG cluster with a matching SID
-    #   [] indicates that there was a match to one (or more) clusters
+    #   {} indicates that there was a match to one (or more) clusters
     #      but that none of the associated SIDs map to a marker.
-    #   [...] is a list of the gene info Tuples that putatively associate
+    #   {...} is a dictionary of the gene keys that putatively associate
     #      with the given SID.
     # ASSUMES: 	
     # SIDE EFFECTS: 
@@ -327,10 +210,10 @@ def getPutativeGenes ( sid ):
     # COMMENTS:
     # - return values:
     #     - None implies that the sid is not in any UG cluster
-    #     - [] implies that sid was found in a cluster or clusters but
+    #     - {} implies that sid was found in a cluster or clusters but
     #       not MGI mouse gene markers are associated with any of the
     #       SIDs in those clusters.
-    #     - Non-empty lists of tuples of gene info for putative assoc.
+    #     - Non-empty dictionary of gene keys for putative assoc.
     #   
     #------------------------------------------------------------------
 
@@ -338,20 +221,18 @@ def getPutativeGenes ( sid ):
     ugSIDs = ug.getAssociatedSIDs ( string.upper ( sid ) )
     
     if ugSIDs:
-	putatives = []
-
+	putatives = {}
 	for ugsid in ugSIDs:
-
 	    genes = mgiSids.getMGIinfo ( ugsid, 1 )
 	    if genes:
 		for info in genes:
 		    # more than 1 SID can produce same geneInfo
 		    # only insert unique gene associations
-		    if info not in putatives:
-			putatives.append ( info )
+		    key = info[MGI_SIDs.MARKERPOS]
+		    if not putatives.has_key(key):
+			putatives[key] = None
+
     return putatives
-
-
 
 def getMGI_SIDsObjectReference ():
     #------------------------------------------------------------------
@@ -383,9 +264,6 @@ def getUGObjectReference ():
     # data member.
     #------------------------------------------------------------------
     return ug
-
-
-
 
 ############
 # MODULE CLASSES
@@ -539,7 +417,6 @@ class UniGeneSIDs:
 	return "SID keys %u; UGID keys %u" % ( len (self._sid2Clusters),
 					       len (self._cluster2SIDs)
 					       )
-
 
     def load ( self, fd ):
 	#------------------------------------------------------------------
@@ -698,7 +575,6 @@ class MGI_SIDs:
     # CLASS CONSTANTS:
     MARKERPOS = 0		# tuple-position of marker key
     SYMBOLPOS = 1		# tuple-position of marker symbol
-##      TYPEPOS   = 2
 
     # field names associated with these positions
     FLDLIST = [None, None]
@@ -805,77 +681,34 @@ class MGI_SIDs:
 	return "SID keys %u" % len(self._sids2Markers)
 
 
-    def load ( self, markerTypeTuple ):
+    def load ( self, markerType ):
 	#------------------------------------------------------------------
 	# INPUTS:
-	#    markerTypeTuple : (boolean, PythonList of strings(types)) or None
+	#    markerType : (markerType) or None
 	# OUTPUTS: none
 	# ASSUMES:
-	# - That sql() can access needed environment variables in order
+	# - That db.sql() can access needed environment variables in order
 	#   to determine a default server/database.
 	# SIDE EFFECTS: populates the class's primary, internal data members
 	#               from the default MGD instance.
 	# EXCEPTIONS: 
 	# COMMENTS:
-	# - The commented out code is for more complete marker information,
-	#   including the marker's preferred MGI ID.
 	#------------------------------------------------------------------
 
-	# this function private to doing the load:
-	def markerType2SQL ( typeTuple ):
-	    filterString = ""
-	    if typeTuple:
-		( sense, typeList ) = typeTuple
-
-		qry = ( "select _Marker_Type_key from MRK_Types "
-			"where name in ( %s ) "
-			% str(typeList)[1:-1]
-			)
-		geneTypes = []
-		sql ( qry, lambda row, d=geneTypes:
-		                  d.append ( row["_Marker_Type_key"] )
-		      )
-
-		if len (typeList) == 1:
-		    typeString = geneTypes[0]
-		    if not sense:
-			op = " != "
-		    else:
-			op = " = "
-		else:
-		    if not sense:			# not in logic
-			op = " not in "
-		    else:
-			op = " in "
-		    typeString = " ( %s ) " % str(geneTypes)[1:-1]
-
-
-		filterString = ( filterString 
-				 + " _Marker_Type_key %s %s "
-				 % ( op, typeString )
-				 )
-
-
-	    return filterString
-
-
 	# for significant marker info
-	qry = ( "select distinct symbol, sid = accID, "
-		"_Marker_key = _Object_key "
-##  		", type=t.name "
-##  		"from ACC_Accession a, MRK_Marker m, MRK_Type t "
-		"from ACC_Accession a, MRK_Marker m "
-		"where _LogicalDB_key = %u "
-		" and _MGIType_key = 2 "
-		" and _Marker_key = _Object_key "
-##  		" and m._Marker_Type_key = t._Marker_Type_key"
-		% SEQDB
-		)
 
-	if markerTypeTuple:
-	    # and on the marker-type filter specification
-	    qry = qry + " and ( %s ) " % markerType2SQL ( markerTypeTuple )
-	sql ( qry, self.sidParser )
+	qryS = 'select sid = a.accID, m.symbol, m._Marker_key '
+	qryF = 'from ACC_Accession a, MRK_Marker m '
+	qryW = 'where a._MGIType_key = 2 ' + \
+	       'and a._LogicalDB_key = %u ' % (SEQDB) + \
+	       'and a._Object_key = m._Marker_key'
+
+	if markerType:
+	    qryF = qryF + ', MRK_Types t '
+	    qryW = qryW + ' and m._Marker_Type_key = t._Marker_Type_key ' + \
+		'and t.name = "%s" ' % (markerType)
+
+	db.sql ( qryS + qryF + qryW, self.sidParser )
 	
 	return
 
@@ -894,8 +727,6 @@ class MGI_SIDs:
 	sid       = string.upper ( row["sid"] )
 	markerKey = row["_Marker_key"]
 	symbol    = row["symbol"]
-##  	mtype     = string.upper ( row["type"] )
-##  	info = [ markerKey, symbol, mtype ]
 	info = [ markerKey, symbol ]
 
 	# same unique copies of the marker info record
@@ -919,127 +750,4 @@ class MGI_SIDs:
 	    self._markers2sids[symbol] = [sid]
 	    
 	return
-
-
-############
-# MAIN:
-#-----------
-
-if __name__ == "__main__":
-
-    def lapsedTime ( tStart ):
-	secsPerHour = 3600
-	secsPerDay  = secsPerHour * 24
-
-	tMark = time.clock()
-	tdiff = tMark - tStart
-	days = hrs = mins = secs = 0
-	if tdiff> secsPerDay:
-	    days = tdiff / secsPerDay
-	    tdiff = tdiff % secsPerDay
-	if tdiff > secsPerHour:
-	    hrs = tdiff / secsPerHour
-	    tdiff = tdiff % secsPerHour
-
-	if tdiff > 60:				# secs in a minute
-	    mins = tdiff / 60
-	    tdiff = tdiff % 60
-
-	secs = tdiff
-
-	st = ""
-	if days: st = "%u days " % days
-	st = st + "%u hours %u mins %4.1f secs" % ( hrs, mins, secs )
-	return (tMark, tMark-tStart, st)
-
-	
-    import getopt, time
-
-    (opts, args) = getopt.getopt ( sys.argv[1:], "hu:i:" )
-
-
-    ugFile    = "Mm.data"
-    dbESTFile = "dbESTputatives.out"
-    
-    ugfd = dbESTfd = None
-    
-    for (opt, value) in opts:
-	if opt == "-u":
-	    ugFile  = value
-	elif opt == "-i":
-	    dbESTFile = value
-	elif opt == "-h":
-	    print __doc__
-	    sys.exit (1)
-
-    print mgi_utils.date(), "\n"
-
-    # defaults files
-    if ugfd is None and ugFile:
-	print "Will get UniGene SID-Cluster associations from", ugFile
-	ugfd = open (ugFile, "r")
-
-    print "Initializing UniGene SID-Cluster and "\
-	  "MGD SID-Gene associative lists..."
-    # load using restriction that Marker Types be Gene only!
-    init ( ugfd, -1, (1, ["Gene"]) )
-
-    cntClones = \
-	      cntNoMGDmatch = \
-	      cntNoUGmatch = \
-	      cntPutatives = \
-	      cntAmbigClusters = 0
-
-    # now iterate over the dbEST input and report which IMAGE clones
-    # get putatives to which MGI genes
-
-    if dbESTfd is None and dbESTFile:
-	print "Reading dbEST Clone/EST/GenBank SID from", dbESTFile
-	dbESTfd = open ( dbESTFile, "r" )
-
-    prbmrkr = open ( "./PRB_Marker.out", "w" )
-    timeRec = open ( "./unigeneLoad.times", "w" )
-
-    line = dbESTfd.readline ()
-    t = tStart = time.clock()
-    
-    while line:
-	cntClones = cntClones + 1
-
-	if cntClones % 1000 == 0:
-	    (t, secs, tstring) = lapsedTime (tStart)
-	    msg = "%u records %s lapsed time %4.2f recs/sec" % (cntClones,
-							     tstring,
-							     cntClones/secs
-							     )
-	    print msg
-	    timeRec.write ( msg + NL )
-	    
-	words = string.split ( line[:-1], "|" )
-
-	if len(words) > 1 and words[1]:
-	    ( mgiPrbKey, llnlID, gbID ) = tuple(words)
-	    putatives = getPutativeGenes ( gbID )
-	    if putatives:
-		cntPutatives = cntPutatives + 1
-		for markerInfo in putatives:
-		    marker = markerInfo[MGI_SIDs.MARKERPOS]
-		    symbol = markerInfo[MGI_SIDs.SYMBOLPOS]
-		    prbmrkr.write ( "%s|%s|\n" % (llnlID, marker) )
-
-	line = dbESTfd.readline()
-
-    # end while
-
-    (t, secs, tstring) = lapsedTime (tStart)
-    msg = "%u records %s lapsed time %4.2f recs/sec" % (cntClones,
-						     tstring,
-						     cntClones/secs
-						     )
-    print msg
-    timeRec.write ( msg + NL )
-    
-    prbmrkr.close()
-    print "%10u...Clone records" % cntClones
-    print "%10u...clones with putative(s)" % cntPutatives
 
