@@ -165,75 +165,6 @@ def init ( ugFile, loadFilter=None ):
 
     return
 
-
-def findCommonSIDs ( clusterList ):
-    #------------------------------------------------------------------
-    # INPUTS:
-    #    clusterList : List of Cluster IDs (strings)
-    # OUTPUTS:  List of Seq IDs that are common to all clusters in list
-    #  
-    # ASSUMES: 	
-    # SIDE EFFECTS: 
-    # EXCEPTIONS: 
-    # COMMENTS:  
-    #------------------------------------------------------------------
-
-    common = ug.getSIDsForUid ( clusterList[0] )
-
-    # for each subsequent cluster ID
-    for cluster in clusterList[1:]:
-	clusterSIDs = ug.getSIDsForUid ( cluster )
-	# for each sid still in the common list
-	# since we may alter the list, step over a copy
-	for sid in common[:]:
-	    # if it doesn't appear in this cluster's list...
-	    if sid not in clusterSIDs:
-		# remove it from the common list
-		common.remove ( sid )
-
-    return common
-
-def getPutativeGenes ( sid ):
-    #------------------------------------------------------------------
-    # INPUTS: sid -- string
-    # OUTPUTS:
-    #   None | Dictionary of _Marker_keys that putatively associate with the given SID.
-    #   None indicates that there are no associated SIDs for the given SID;
-    #        i.e., there's no UG cluster with a matching SID
-    #   {} indicates that there was a match to one (or more) clusters
-    #      but that none of the associated SIDs map to a marker.
-    #   {...} is a dictionary of the gene keys that putatively associate
-    #      with the given SID.
-    # ASSUMES: 	
-    # SIDE EFFECTS: 
-    # EXCEPTIONS: 
-    # COMMENTS:
-    # - return values:
-    #     - None implies that the sid is not in any UG cluster
-    #     - {} implies that sid was found in a cluster or clusters but
-    #       not MGI mouse gene markers are associated with any of the
-    #       SIDs in those clusters.
-    #     - Non-empty dictionary of gene keys for putative assoc.
-    #   
-    #------------------------------------------------------------------
-
-    putatives = None
-    ugSIDs = ug.getAssociatedSIDs ( string.upper ( sid ) )
-    
-    if ugSIDs:
-	putatives = {}
-	for ugsid in ugSIDs:
-	    genes = mgiSids.getMGIinfo ( ugsid, 1 )
-	    if genes:
-		for info in genes:
-		    # more than 1 SID can produce same geneInfo
-		    # only insert unique gene associations
-		    key = info[MGI_SIDs.MARKERPOS]
-		    if not putatives.has_key(key):
-			putatives[key] = None
-
-    return putatives
-
 def getMGI_SIDsObjectReference ():
     #------------------------------------------------------------------
     # INPUTS: 	None
@@ -283,12 +214,10 @@ class UniGeneSIDs:
     #
     # METHODS:
     # (PUBLIC)
-    # getAssociatedSIDs ( sid) /*, uniqueFlag)*/ : list of SIDs
     # getClusterIDs () : list of cluster ID keys in the assoc. data struct.
     # getClustersForSID ( sid ) : list of cluster ID(s) for this sid
     # getSIDs () : list of unique SIDs in the associative data structure
     # getSIDsForUid ( UniGeneCluster_ID ) : list of SIDs
-    # length ()  : string -- debugging; shows counts for the two dictionaries
     # load ( fd:FILE ) -- loads data structure from specified file
     #
     # (PRIVATE)
@@ -318,37 +247,6 @@ class UniGeneSIDs:
 	self._sid2Clusters = {}
 	self._cluster2SIDs = {}
 	return
-
-    def getAssociatedSIDs ( self, sid, uniqueCluster=0 ):
-	#------------------------------------------------------------------
-	# INPUTS:
-	#   sid : string -- the Sequence ID to look up
-	#   uniqueCluster: boolean -- whether or not to expand sid-cluster
-	#                             associations when the sid appears in
-	#                             multiple clusters
-	# OUTPUTS: a list of all sids associated via UniGene cluster(s)
-	#          to the argument SID or an empty list if none qualify.
-	# ASSUMES: 
-	# SIDE EFFECTS: 
-	# EXCEPTIONS: 
-	# COMMENTS:
-	#   The elif could do both jobs with an or'd if test but this
-	#   causes the list to be copied to another list; the separate
-	#   code eliminates a needless element-wise copy when the list
-	#   is only 
-	#------------------------------------------------------------------
-
-	sids = []
-	uids = self.getClustersForSID ( string.upper ( sid ) )
-	if len(uids) == 1:
-	    sids = self.getSIDsForUid ( uids[0] )
-	elif not uniqueCluster and len(uids) > 1:
-	    for uid in uids:
-		# accummulate the sids
-		sids = sids + self.getSIDsForUid ( uid )
-
-	return sids
-    
 
     def getClusterIDs ( self ):
 	#------------------------------------------------------------------
@@ -412,11 +310,6 @@ class UniGeneSIDs:
 	
 	return []
 
-
-    def length ( self ):
-	return "SID keys %u; UGID keys %u" % ( len (self._sid2Clusters),
-					       len (self._cluster2SIDs)
-					       )
 
     def load ( self, fd ):
 	#------------------------------------------------------------------
@@ -544,8 +437,6 @@ class MGI_SIDs:
     #  getMGIkeys () : List of _Marker_key values in _markerInfo dictionary.
     #  getSIDkeys () : List of SID values in _sids2Markers.
     #  getSIDsForMarker ( s ) : list of SIDs for the symbol
-    #  getSymbols () : List of symbols in _markers2sids
-    #  length () : string -- debugging; message w/ # entries in the dict.
     #  load ( MarkerFilterTuple : (boolean, list of strings) ) --
     #             gets SID-marker information from default MGD instance;
     #             populating the class's dictionary
@@ -664,23 +555,6 @@ class MGI_SIDs:
 	return results
     
 
-    def getSymbols ( self ):
-	#------------------------------------------------------------------
-	# INPUTS:
-	# OUTPUTS: List of symbols for which we have SID-Marker Info
-	# ASSUMES: 	
-	# SIDE EFFECTS: 
-	# EXCEPTIONS: 
-	# COMMENTS:  
-	#------------------------------------------------------------------
-	results = self._markers2sids.keys()
-	return results
-
-
-    def length ( self ):
-	return "SID keys %u" % len(self._sids2Markers)
-
-
     def load ( self, markerType ):
 	#------------------------------------------------------------------
 	# INPUTS:
@@ -712,7 +586,6 @@ class MGI_SIDs:
 	db.sql ( qryS + qryF + qryW, self.sidParser )
 	
 	return
-
 
     def sidParser ( self, row ):
 	#------------------------------------------------------------------
