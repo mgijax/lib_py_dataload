@@ -81,7 +81,7 @@ def verifyLogicalDB(
 
 # Purpose:  verify Marker Accession ID
 # Returns:  Marker Key if Marker is valid, else 0
-# Assumes:  nothing
+# Assumes:  Organism is "mouse"
 # Effects:  verifies that the Marker exists either in the Marker dictionary or the database
 #	writes to the error file if the Marker is invalid
 #	adds the Marker id and key to the Marker dictionary if the Marker is valid
@@ -90,7 +90,9 @@ def verifyLogicalDB(
 def verifyMarker(
     markerID, 	# Accession ID of the Marker (string)
     lineNum,	# line number (integer)
-    errorFile   # error file descriptor
+    errorFile,  # error file descriptor
+    checkDuplicate = 0,	# check if Marker is a duplicate
+    organism = 'mouse, laboratory'
     ):
 
     global markerDict
@@ -98,9 +100,25 @@ def verifyMarker(
     markerKey = 0
 
     if markerDict.has_key(markerID):
-        markerKey = markerDict[markerID]
+	if checkDuplicate:
+	    if errorFile != None:
+		errorFile.write('Duplicate Mouse Marker (%d) %s\n' % (lineNum, markerID))
+        else:
+	    markerKey = markerDict[markerID]
     else:
-        results = db.sql('select _Object_key from MRK_Acc_View where accID = "%s" ' % (markerID), 'auto')
+        results = db.sql('select a._Object_key ' + \
+	    'from MRK_Acc_View a, MRK_Marker m, MRK_Species s ' + \
+	    'where a.accID = "%s" ' % (markerID) + \
+	    'and a._Object_key = m._Marker_key ' + \
+	    'and m._Species_key = s._Species_key ' + \
+	    'and s.name = "%s" ' % (organism), 'auto')
+
+#        results = db.sql('select a._Object_key ' + \
+#	    'from MRK_Acc_View a, MRK_Marker m, MGI_Organism o ' + \
+#	    'where a.accID = "%s" ' % (markerID) + \
+#	    'and a._Object_key = m._Marker_key ' + \
+#	    'and m._Organism_key = o._Organism_key ' + \
+#	    'and o.commonName = "%s" ' % (organism), 'auto')
 
         for r in results:
             if r['_Object_key'] is None:
@@ -281,10 +299,16 @@ def verifyMarkerType(
     return markerTypeKey
 
 # $Log$
+# Revision 1.4  2003/09/25 12:40:30  lec
+# new
+#
 # Revision 1.3  2003/09/25 12:11:48  lec
 # new
 #
 # $Log$
+# Revision 1.4  2003/09/25 12:40:30  lec
+# new
+#
 # Revision 1.3  2003/09/25 12:11:48  lec
 # new
 #
