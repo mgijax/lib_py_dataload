@@ -43,6 +43,7 @@ import accessionlib
 assayTypeDict = {}      # assay type
 coverageDict = {}       # probe coverage
 embeddingDict = {}      # embedding method
+fieldTypeDict = {}	# image pane field type
 fixationDict = {}       # fixation
 gelRNATypeDict = {}     # gel rna types
 gelControlDict = {}     # gel control
@@ -314,6 +315,35 @@ def verifyHybridization(
         errorFile.write('Invalid Prep Type (%d): %s\n' % (lineNum, hybridization))
         return 0
 
+# Purpose:  verify Field Type
+# Returns:  Field Type key if valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Field Type exists in the fieldType dictionary
+#	writes to the error file if the Field Type is invalid
+# Throws:  nothing
+
+def verifyFieldType(
+    fieldType, 	# Field Type value (string)
+    lineNum,	# line number (integer)
+    errorFile	   # error file (file descriptor)
+    ):
+
+    global fieldTypeDict
+
+    fieldTypeKey = 0
+
+    if len(fieldTypeDict) == 0:
+	results = db.sql('select _FieldType_key, fieldType from IMG_FieldType', 'auto')
+	for r in results:
+	    fieldTypeDict[r['fieldType']] = r['_FieldType_key']
+
+    if fieldTypeDict.has_key(fieldType):
+        fieldTypeKey = fieldTypeDict[fieldType]
+    else:
+        errorFile.write('Invalid Field Type (%d): %s\n' % (lineNum, fieldType))
+
+    return fieldTypeKey
+
 # Purpose:  verify Probe Prep Coverage
 # Returns:  Probe Prep Coverage key if valid, else 0
 # Assumes:  nothing
@@ -581,3 +611,6 @@ def verifyStructure(
     return structureKey
 
 # $Log$
+# Revision 1.1  2003/09/23 19:44:15  lec
+# new
+#
