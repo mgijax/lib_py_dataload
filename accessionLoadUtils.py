@@ -281,16 +281,18 @@
 #   (prefix, suffix) = accessionLoadUtils.accSplit ( dbESTAccID )
 #     query = """insert into ACC_Accession (
 #	_Accession_key, accID, prefixPart, numericPart, _LogicalDB_key
-#	_Object_key, _MGIType_key, private, preferred,
+#	_Object_key, _MGIType_key, _CreatedBy_key, _ModifiedBy_key, private, preferred,
 #	creationDate, modificationDate, releaseDate )
-#	values ( %u, '%s', '%s', %u, %s, %u, %u, 0, 1, , , )""" % ( 
+#	values ( %u, '%s', '%s', %u, %s, %u, %u, 0, 1, %u, %u, , , )""" % ( 
 #	       accessionLoadUtils.getNextAccKey(),   # next avail. _Accession_key
 #	     dbESTaccID, # accID
 #	     prefix,     # prefixPart
 #	     suffix,     # numericPart
 #	     dbEST,      # _logicalDB_key
 #	     1234,       # _Object_key (arbitrary key to some relevant mgi obj.)
-#	     segment     # _MGIType_key
+#	     segment,    # _MGIType_key
+#	     1200,	 # _CreatedBy_key
+#	     1200	 # _ModifiedBy_key
 #	 )
 #
 #
@@ -838,7 +840,7 @@ def stillValidMGIAcc ():
     return mgiAcc.isStillValid()
 
 
-def mkAccession ( prefix, suffix, lDB, objKey, mgiType,
+def mkAccession ( prefix, suffix, lDB, objKey, mgiType, createdByKey,
 		  private=0, preferred=1 ):
     """
 	creates a bcp entry as a LIST object
@@ -850,6 +852,7 @@ def mkAccession ( prefix, suffix, lDB, objKey, mgiType,
     #   lDB    : int or string -- _LogicalDB_key value or name
     #   objKey : int -- _Object_key value
     #   mgiType: int or string -- _MGIType_key value or name
+    #   createdByKey : int -- user who is creating the record
     #   private : int optional; default 0
     #   prefered : int optional; default 1
     # OUTPUTS:     
@@ -903,9 +906,10 @@ def mkAccession ( prefix, suffix, lDB, objKey, mgiType,
 	     typeKey,		    # _MGIType_key
 	     private,		    # private
 	     preferred,		    # preferred
+	     createdByKey,          # _CreatedBy_key
+	     createdByKey,          # _ModifiedBy_key
 	     None,			# cr-date
-	     None,			# mod-date
-	     None			# rel-date
+	     None			# mod-date
 	     ]
 
 
