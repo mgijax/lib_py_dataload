@@ -42,7 +42,9 @@ cellLineDict = {}
 genderDict = {}		# dictionary of Gender
 libraryDict = {}        # dictionary of Library names and Library keys
 libraryIDDict = {}      # dictionary of Library Ids and Library keys
+organismDict = {}	# dictionary of Organisms and keys
 segmentTypeDict = {}	# dictionary of Segment Types and keys
+sourceDict = {}		# dictionary of Source and keys
 strainDict = {}         # dictionary of Strain names and Strain keys
 tissueDict = {}         # dictionary of Tissue names and Tissue keys
 vectorTypeDict = {}	# dictionary of Vector Types and keys
@@ -189,6 +191,36 @@ def verifyGender(
             errorFile.write('Invalid Gender (line: %d) %s\n' % (lineNum, gender))
         return 0
 
+# Purpose: verifies the Organism
+# Returns: 0 if the Organism
+#		else the primary key of the Organism
+# Assumes: nothing
+# Effects: saves the Organism/primary key in a dictionary for faster lookup
+#          writes to the error log if the Organism is invalid
+# Throws: nothing
+
+def verifyOrganism(
+    organism,		# the Organism value from the input file (string)
+    lineNum,		# the line number (from the input file) on which this value was found
+    errorFile	 # error file (file descriptor)
+    ):
+
+    global organismDict
+
+    if organismDict.has_key(organism):
+        return organismDict[organism] 
+    else:
+        results = db.sql('select _Organism_key from MGI_Organism where commonName = "%s"' % (organism), 'auto')
+
+	if len(results) == 0:
+	    if errorFile != None:
+                errorFile.write('Invalid Organism (line: %d) %s\n' % (lineNum, organism))
+	    return 0
+
+        for r in results:
+            organismDict[organism] = r['_Organism_key']
+            return r['_Organism_key'] 
+
 # Purpose: verifies the Sex
 # Returns: 0 if the Sex value is invalid
 #		else the Sex value
@@ -208,6 +240,54 @@ def verifySex(
 	if errorFile != None:
             errorFile.write('Invalid Gender (line: %d): %s\n' % (lineNum, gender))
         return 0
+
+# Purpose: verifies the Source
+# Returns: 0 if the Source
+#		else the primary key of the Source
+# Assumes: nothing
+# Effects: saves the Source/primary key in a dictionary for faster lookup
+#          writes to the error log if the Source is invalid
+# Throws: nothing
+
+def verifySource(
+    segmentTypeKey, 
+    vectorKey, 
+    organismKey, 
+    strainKey, 
+    tissueKey, 
+    genderKey, 
+    cellLineKey, 
+    age,
+    lineNum,	# the line number (from the input file) on which this value was found
+    errorFile	 # error file (file descriptor)
+    ):
+
+    global sourceDict
+
+    source = "%s,%s,%s,%s,%s,%s,%s,%s" % (segmentTypeKey, vectorKey, organismKey, strainKey, tissueKey, genderKey, cellLineKey, age)
+
+    if sourceDict.has_key(source):
+        return sourceDict[source] 
+    else:
+        results = db.sql('select _Source_key from PRB_Source where ' + \
+		'_SegmentType_key = %s ' % (segmentTypeKey) + \
+		'and _Vector_key = %s ' % (vectorKey) + \
+		'and _Organism_key = %s ' % (organismKey) + \
+		'and _Strain_key = %s ' % (strainKey) + \
+		'and _Tissue_key = %s ' % (tissueKey) + \
+		'and _Gender_key = %s ' % (genderKey) + \
+		'and _CellLine_key = %s ' % (cellLineKey) + \
+		'and age = "%s" ' % (age) + \
+		'and isCuratorEdited = 0 ', 'auto')
+
+	if len(results) == 0:
+	    if errorFile != None:
+                errorFile.write('Invalid Source (line: %d) %s\n' % (lineNum, source))
+	    return 0
+
+        for r in results:
+            sourceDict[source] = r['_Source_key']
+            return r['_Source_key'] 
 
 # Purpose: verifies the Strain
 # Returns: 0 if the Strain
@@ -326,6 +406,9 @@ def verifyVectorType(
         return 0
 
 # $Log$
+# Revision 1.6  2004/08/23 16:11:26  lec
+# JSAM
+#
 # Revision 1.5  2004/01/14 20:25:05  lec
 # fix
 #
