@@ -1,0 +1,16 @@
+# Dependencies for ugload:
+#
+
+#! MGI Products
+# Product	Tag	Comments
+# --------------------------------------------------
+
+??	??	uses db.py, mgi_utils.py
+MGI Schema	???	
+
+
+#! External Products
+# Product	Tag	Comments
+# -----------------------------------
+Python	1.4
+Sybase	..11.5
