@@ -109,18 +109,11 @@ def verifyMarker(
 	    markerKey = markerDict[markerID]
     else:
         results = db.sql('select a._Object_key ' + \
-	    'from MRK_Acc_View a, MRK_Marker m, MRK_Species s ' + \
+	    'from MRK_Acc_View a, MRK_Marker m, MGI_Organism o ' + \
 	    'where a.accID = "%s" ' % (markerID) + \
 	    'and a._Object_key = m._Marker_key ' + \
-	    'and m._Species_key = s._Species_key ' + \
-	    'and s.name = "%s" ' % (organism), 'auto')
-
-#        results = db.sql('select a._Object_key ' + \
-#	    'from MRK_Acc_View a, MRK_Marker m, MGI_Organism o ' + \
-#	    'where a.accID = "%s" ' % (markerID) + \
-#	    'and a._Object_key = m._Marker_key ' + \
-#	    'and m._Organism_key = o._Organism_key ' + \
-#	    'and o.commonName = "%s" ' % (organism), 'auto')
+	    'and m._Organism_key = o._Organism_key ' + \
+	    'and o.commonName = "%s" ' % (organism), 'auto')
 
         for r in results:
             if r['_Object_key'] is None:
@@ -377,6 +370,9 @@ def verifyMarkerType(
     return markerTypeKey
 
 # $Log$
+# Revision 1.6  2004/01/14 20:22:26  lec
+# fix logicalDBDict
+#
 # Revision 1.5  2003/09/25 13:04:45  lec
 # new
 #
@@ -387,6 +383,9 @@ def verifyMarkerType(
 # new
 #
 # $Log$
+# Revision 1.6  2004/01/14 20:22:26  lec
+# fix logicalDBDict
+#
 # Revision 1.5  2003/09/25 13:04:45  lec
 # new
 #
