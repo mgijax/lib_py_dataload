@@ -586,6 +586,28 @@ class UniGeneSIDs:
 	return
 
 
+    def splitSeqIdV(self, seqIdVersion):      # String - seqId.version
+
+        # Purpose: split 'seqIdVersion' into seqId and version
+        # Returns: list of two strings - 1) seqId 2) version
+        # Assumes: nothing
+        # Effects: nothing
+        # Throws: nothing
+        # Example1: seqId, version = splitSeqIdV('AC002397.1')
+        #           seqId = 'AC002397'
+        #           version = '1'
+        # Example2: seqId, version = splitSeqIdV('AC002397')
+        #           seqId = 'AC002397'
+        #           version = ''
+
+        index = string.find(seqIdVersion, '.')
+        if index == -1:
+                return [seqIdVersion, '']
+        else:
+                seqId = seqIdVersion[0:index]
+                version = seqIdVersion[index+1:]
+                return [seqId, version]
+
     def readRecord ( self, fd ):
 	#------------------------------------------------------------------
 	# INPUTS: FILE reference
@@ -609,7 +631,8 @@ class UniGeneSIDs:
 		ugid = words[1]
 	    elif tag == "SEQUENCE" and words[1][:4] == "ACC=":
 		# extract the GenBank ID from form "ACC=.*;" & accummulate
-		sid = words[1][4:-1]
+		tempid = words[1][4:-1]
+		[sid, version] = self.splitSeqIdV(tempid)
 		sequenceList.append ( sid )
 
 	    line = fd.readline()
