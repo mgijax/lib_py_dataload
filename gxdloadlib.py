@@ -50,15 +50,18 @@ gelControlDict = {}     # gel control
 gelUnitsDict = {}       # gel units
 gelStrengthDict = {}    # gel strength
 genotypeDict = {}       # genotype
+idxassayDict = {}	# index assay
+idxpriorityDict = {}	# index priority
+idxstageDict = {}	# index stage
 labelDict = {}          # probe label
 patternDict = {}        # pattern
 reporterGeneDict = {}   # reporter gene
 senseDict = {}          # probe sense
 strengthDict = {}       # strength
-structureDict = {}     	# dictionary of structures for quick lookup
+structureDict = {}     	# structures
 visualDict = {}         # probe visualization
 
-prepTypeList = ['DNA', 'RNA', 'Not Specified']  # lookup of probe prep types
+prepTypeList = ['DNA', 'RNA', 'Not Specified']  # probe prep types
 hybridizationList = ['section', 'whole mount', 'section from whole mount']
 
 # Purpose:  verify Assay Type
@@ -118,6 +121,35 @@ def verifyEmbeddingMethod(
         errorFile.write('Invalid Embedding Method (%d): %s\n' % (lineNum, embedding))
 
     return embeddingKey
+
+# Purpose:  verify Field Type
+# Returns:  Field Type key if valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Field Type exists in the fieldType dictionary
+#	writes to the error file if the Field Type is invalid
+# Throws:  nothing
+
+def verifyFieldType(
+    fieldType, 	# Field Type value (string)
+    lineNum,	# line number (integer)
+    errorFile	   # error file (file descriptor)
+    ):
+
+    global fieldTypeDict
+
+    fieldTypeKey = 0
+
+    if len(fieldTypeDict) == 0:
+	results = db.sql('select _FieldType_key, fieldType from IMG_FieldType', 'auto')
+	for r in results:
+	    fieldTypeDict[r['fieldType']] = r['_FieldType_key']
+
+    if fieldTypeDict.has_key(fieldType):
+        fieldTypeKey = fieldTypeDict[fieldType]
+    else:
+        errorFile.write('Invalid Field Type (%d): %s\n' % (lineNum, fieldType))
+
+    return fieldTypeKey
 
 # Purpose:  verify Fixation Method
 # Returns:  Fixation key if valid, else 0
@@ -315,34 +347,92 @@ def verifyHybridization(
         errorFile.write('Invalid Prep Type (%d): %s\n' % (lineNum, hybridization))
         return 0
 
-# Purpose:  verify Field Type
-# Returns:  Field Type key if valid, else 0
+# Purpose:  verify Index Assay
+# Returns:  Assay key if valid, else 0
 # Assumes:  nothing
-# Effects:  verifies that the Field Type exists in the fieldType dictionary
-#	writes to the error file if the Field Type is invalid
+# Effects:  verifies that the Assay exists in the idxassay dictionary
+#	writes to the error file if the Assay is invalid
 # Throws:  nothing
 
-def verifyFieldType(
-    fieldType, 	# Field Type value (string)
+def verifyIdxAssay(
+    idxassay, 	# Assay value (string)
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
 
-    global fieldTypeDict
+    global idxassayDict
 
-    fieldTypeKey = 0
+    idxassayKey = 0
 
-    if len(fieldTypeDict) == 0:
-	results = db.sql('select _FieldType_key, fieldType from IMG_FieldType', 'auto')
+    if len(idxassayDict) == 0:
+	results = db.sql('select _Term_key, term from VOC_Term_GXDIndexAssay_View', 'auto')
 	for r in results:
-	    fieldTypeDict[r['fieldType']] = r['_FieldType_key']
+	    idxassayDict[r['term']] = r['_Term_key']
 
-    if fieldTypeDict.has_key(fieldType):
-        fieldTypeKey = fieldTypeDict[fieldType]
+    if idxassayDict.has_key(idxassay):
+        idxassayKey = idxassayDict[idxassay]
     else:
-        errorFile.write('Invalid Field Type (%d): %s\n' % (lineNum, fieldType))
+        errorFile.write('Invalid Index Assay (%d): %s\n' % (lineNum, idxassay))
 
-    return fieldTypeKey
+    return idxassayKey
+
+# Purpose:  verify Index Priority
+# Returns:  Priority key if valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Priority exists in the idxpriority dictionary
+#	writes to the error file if the Priority is invalid
+# Throws:  nothing
+
+def verifyIdxPriority(
+    idxpriority, 	# Priority value (string)
+    lineNum,		# line number (integer)
+    errorFile	   	# error file (file descriptor)
+    ):
+
+    global idxpriorityDict
+
+    idxpriorityKey = 0
+
+    if len(idxpriorityDict) == 0:
+	results = db.sql('select _Term_key, term from VOC_Term_GXDIndexPriority_View', 'auto')
+	for r in results:
+	    idxpriorityDict[r['term']] = r['_Term_key']
+
+    if idxpriorityDict.has_key(idxpriority):
+        idxpriorityKey = idxpriorityDict[idxpriority]
+    else:
+        errorFile.write('Invalid Index Priority (%d): %s\n' % (lineNum, idxpriority))
+
+    return idxpriorityKey
+
+# Purpose:  verify Index Stage
+# Returns:  Stage key if valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Stage exists in the idxstage dictionary
+#	writes to the error file if the Stage is invalid
+# Throws:  nothing
+
+def verifyIdxStage(
+    idxstage, 	# Stage value (string)
+    lineNum,		# line number (integer)
+    errorFile	   	# error file (file descriptor)
+    ):
+
+    global idxstageDict
+
+    idxstageKey = 0
+
+    if len(idxstageDict) == 0:
+	results = db.sql('select _Term_key, term from VOC_Term_GXDIndexStage_View', 'auto')
+	for r in results:
+	    idxstageDict[r['term']] = r['_Term_key']
+
+    if idxstageDict.has_key(idxstage):
+        idxstageKey = idxstageDict[idxstage]
+    else:
+        errorFile.write('Invalid Index Stage (%d): %s\n' % (lineNum, idxstage))
+
+    return idxstageKey
 
 # Purpose:  verify Probe Prep Coverage
 # Returns:  Probe Prep Coverage key if valid, else 0
@@ -557,10 +647,7 @@ def verifyReporterGene(
     reporterGeneKey = 0
 
     if len(reporterGeneDict) == 0:
-	results = db.sql('select t._Term_key, t.term ' + \
-	    'from VOC_Vocab v, VOC_Term t ' + \
-	    'where v.name = "GXD Reporter Gene" ' + \
-	    'and v._Vocab_key = t._Vocab_key', 'auto')
+	results = db.sql('select t._Term_key, t.term from VOC_Term_GXDReporterGene_View', 'auto')
 	for r in results:
 	    reporterGeneDict[r['term']] = r['_Term_key']
 
@@ -611,6 +698,9 @@ def verifyStructure(
     return structureKey
 
 # $Log$
+# Revision 1.2  2003/09/23 19:48:11  lec
+# new
+#
 # Revision 1.1  2003/09/23 19:44:15  lec
 # new
 #

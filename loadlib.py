@@ -40,12 +40,21 @@ import accessionlib
 
 #globals
 
-markerDict = {}      	# dictionary of markers for quick lookup
-probeDict = {}		# dictionary of probes for quick lookup
-referenceDict = {}      # dictionary of references for quick lookup
-userDict = {}		# dictionary of users for quick lookup
+markerDict = {}      	# markers
+objectDict = {}		# objects
+probeDict = {}		# probes
+referenceDict = {}      # references
+userDict = {}		# users
 
 loaddate = mgi_utils.date('%m/%d/%Y')	# current date
+
+# Purpose:  verify Marker Accession ID
+# Returns:  Marker Key if Marker is valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Marker exists either in the Marker dictionary or the database
+#	writes to the error file if the Marker is invalid
+#	adds the Marker id and key to the Marker dictionary if the Marker is valid
+# Throws:  nothing
 
 def verifyMarker(
     markerID, 	# Accession ID of the Marker (string)
@@ -72,12 +81,63 @@ def verifyMarker(
 
     return markerKey
 
+# Purpose:  verify Object Accession ID
+# Returns:  Object Key if Object is valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Object exists either in the Object dictionary or the database
+#	by either the Object ID or the Object Description
+#	writes to the error file if the Object is invalid
+#	adds the Object id and key to the Object dictionary if the Object is valid
+# Throws:  nothing
+
+def verifyObject(
+    objectID, 		# Accession ID of the Object (string)
+    mgiTypeKey, 	# Object Type (string)
+    objectDescription,	# Object description (string)
+    lineNum,		# line number (integer)
+    errorFile   	# error file descriptor
+    ):
+
+    global objectDict
+
+    objectKey = None
+
+    if len(objectID) > 0 and objectDict.has_key(objectID):
+        return objectDict[objectID] 
+
+    elif len(objectID) > 0:
+        results = db.sql('select a._Object_key from ACC_Accession a ' + \
+            'where a.accID = "%s" ' % (objectID) + \
+            'and a._MGIType_key = %s' % (mgiTypeKey), 'auto')
+
+        for r in results:
+            objectKey = r['_Object_key']
+    else:
+        results = db.sql('select dbView from ACC_MGIType where _MGIType_key = %s' % (mgiTypeKey), 'auto')
+
+	if len(results) > 0:
+            dbView = results[0]['dbView']
+
+            results = db.sql('select _Object_key from %s ' % (dbView) + \
+	        ' where description = "%s" ' % (objectDescription), 'auto')
+
+            for r in results:
+                objectKey = r['_Object_key']
+
+    if objectKey is None:
+        errorFile.write('Invalid Object (%d) %s\n' % (lineNum, objectID))
+        objectKey = 0
+    else:
+        objectDict[objectID] = objectKey
+
+    return objectKey
+
 # Purpose:  verify Probe Accession ID
 # Returns:  Probe Key if Probe is valid, else 0
 # Assumes:  nothing
-# Effects:  verifies that the Probe exists either in the probe dictionary or the database
+# Effects:  verifies that the Probe exists either in the Probe dictionary or the database
 #	writes to the error file if the Probe is invalid
-#	adds the probe id and key to the probe dictionary if the Probe is valid
+#	adds the Probe id and key to the Probe dictionary if the Probe is valid
 # Throws:  nothing
 
 def verifyProbe(
@@ -105,8 +165,16 @@ def verifyProbe(
 
     return probeKey
 
+# Purpose:  verify Reference Accession ID
+# Returns:  Reference Key if Reference is valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Reference exists either in the Reference dictionary or the database
+#	writes to the error file if the Reference is invalid
+#	adds the Reference id and key to the Reference dictionary if the Reference is valid
+# Throws:  nothing
+
 def verifyReference(
-    referenceID,        # reference accession ID; J:#### (string)
+    referenceID,        # reference accession ID (string)
     lineNum,		# line number (integer)
     errorFile   	# error file descriptor
     ):
@@ -134,7 +202,7 @@ def verifyUser(
     global userDict
 
     if len(userDict) == 0:
-        results = db.sql('select _User_key, login from MGI_User', 'auto')
+        results = db.sql('select _User_key, login from MGI_User_Active_View', 'auto')
         for r in results:
             userDict[r['login']] = r['_User_key']
 
@@ -147,3 +215,6 @@ def verifyUser(
     return userKey
 
 # $Log$
+# Revision 1.1  2003/09/23 19:44:16  lec
+# new
+#
