@@ -41,6 +41,7 @@ import agelib
 cellLineDict = {}
 genderDict = {}		# dictionary of Gender
 libraryDict = {}        # dictionary of Library names and Library keys
+libraryIDDict = {}      # dictionary of Library Ids and Library keys
 segmentTypeDict = {}	# dictionary of Segment Types and keys
 strainDict = {}         # dictionary of Strain names and Strain keys
 tissueDict = {}         # dictionary of Tissue names and Tissue keys
@@ -109,20 +110,55 @@ def verifyCellLine(
 
 def verifyLibrary(
     libraryName, # the Library Name value from the input file (string)
-    lineNum      # the line number (from the input file) on which this value was found (integer)
+    lineNum,     # the line number (from the input file) on which this value was found (integer)
+    errorFile = None	# error file (file descriptor)
     ):
 
     global libraryDict
 
     # if dictionary is empty, initialize it
     if len(libraryDict) == 0:
-        results = db.sql('select _Source_key, name from %s where name is not null' % (libraryTable), 'auto')
+        results = db.sql('select _Source_key, name from PRB_Source where name is not null', 'auto')
         for r in results:
             libraryDict[r['name']] = r['_Source_key']
 
     if libraryDict.has_key(libraryName):
         return libraryDict[libraryName] 
     else:
+	if errorFile != None:
+            errorFile.write('Invalid Library (line: %d) %s\n' % (lineNum, libraryName))
+        return 0
+
+# Purpose: verifies the Library value by ID
+# Returns: 0 if the Library does not exist in MGI
+#          else the primary key of the Library
+# Assumes: nothing
+# Effects: initializes the Library dictionary for quicker lookup
+# Throws: nothing
+
+def verifyLibraryID(
+    libraryID,   # the Library ID value from the input file (string)
+    logicalDBKey,# the Logical DB key value of the Library from the input file (string)
+    lineNum,     # the line number (from the input file) on which this value was found (integer)
+    errorFile = None	# error file (file descriptor)
+    ):
+
+    global libraryIDDict
+
+    # if dictionary is empty, initialize it
+    if len(libraryIDDict) == 0:
+        results = db.sql('select _LogicalDB_key, _Object_key, accID from PRB_Source_Acc_View', 'auto')
+        for r in results:
+	    key = str(r['_LogicalDB_key']) + ':' + r['accID']
+	    value = r['_Object_key']
+            libraryIDDict[key] = value
+
+    key = LogicalDBKey + ':' + libraryID
+    if libraryIDDict.has_key(key):
+        return libraryIDDict[key] 
+    else:
+	if errorFile != None:
+            errorFile.write('Invalid Library ID (line: %d) %s\n' % (lineNum, libraryID))
         return 0
 
 # Purpose: verifies the Gender
@@ -290,4 +326,7 @@ def verifyVectorType(
         return 0
 
 # $Log$
+# Revision 1.1  2003/09/25 12:40:32  lec
+# new
+#
 #
