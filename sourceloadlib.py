@@ -153,7 +153,7 @@ def verifyLibraryID(
 	    value = r['_Object_key']
             libraryIDDict[key] = value
 
-    key = LogicalDBKey + ':' + libraryID
+    key = logicalDBKey + ':' + libraryID
     if libraryIDDict.has_key(key):
         return libraryIDDict[key] 
     else:
@@ -326,6 +326,9 @@ def verifyVectorType(
         return 0
 
 # $Log$
+# Revision 1.2  2004/01/14 18:49:35  lec
+# updated
+#
 # Revision 1.1  2003/09/25 12:40:32  lec
 # new
 #
