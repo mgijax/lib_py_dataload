@@ -191,11 +191,8 @@ def init ( ugFile, retrieve=-1, loadFilter=None ):
 	    raise IOError, msg
     elif ugFileArgType is FileType:
 	ugfh = ugFile
-	# redundant
-##      else:
-##  	raise AttributeError, "Expecting File name or File object."
 
-	
+
     # load available Unigene SID-Cluster associations
     ug.load ( ugfh )
 
@@ -555,18 +552,28 @@ class UniGeneSIDs:
 	rec = self.readRecord (fd)
 	while rec:
 	    (ugid, seqList) = rec
-	    # each cluster ID should be unique
+	    
+	    # SIDs might be in more than one cluster ...
+	    for sid in seqList[:]:
+		
+		if not self._sid2Clusters.has_key ( sid ):
+		    # first cluster w/ this sid:
+		    self._sid2Clusters [ sid ] = [ ugid ]
+		    
+		elif ugid in self._sid2Clusters[ sid ]:
+		    # ... or in same cluster more than once...
+		    # don't add reduncantly,
+		    # ... and remove duplicate from SID list
+		    seqList.remove ( sid )
+		    
+		else:
+		    self._sid2Clusters[sid].append (ugid)
+
+	    # ... however, each cluster ID should be unique
 	    if self._cluster2SIDs.has_key ( ugid ):
 		raise KeyError, "Duplicate cluster ID %s" % ugid
 	    else:
 		self._cluster2SIDs [ ugid ] = seqList
-
-	    # however, SIDs might be in more than one cluster
-	    for sid in seqList:
-		if self._sid2Clusters.has_key ( sid ):
-		    self._sid2Clusters[sid].append (ugid)
-		else:
-		    self._sid2Clusters [ sid ] = [ ugid ]
 
 	    rec = self.readRecord (fd)
 
