@@ -38,6 +38,7 @@ import db
 #globals
 
 ecodeDict = {}         # evidence codes
+qualifierDict = {}     # qualifiers
 
 # Purpose:  verify Evidence Code
 # Returns:  Evidence Code key if valid, else 0
@@ -74,7 +75,45 @@ def verifyEvidence(
 
     return ecodeKey
 
+# Purpose:  verify Qualifier
+# Returns:  Qualifier key if valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Qualifier exists in the qualifier dictionary
+#	writes to the error file if the Qualifier is invalid
+# Throws:  nothing
+
+def verifyQualifier(
+    qualifier, 	  # Qualifier value (string)
+    annotTypeKey, # Annotation Type key, (string)
+    lineNum,	  # line number (integer)
+    errorFile	   # error file (file descriptor)
+    ):
+
+    global qualifierDict
+
+    qualifierKey = 0
+
+    if len(qualifierDict) == 0:
+        results = db.sql('select e._Term_key, e.abbreviation ' + \
+                        'from VOC_Term e, VOC_AnnotType t ' + \
+                        'where e._Vocab_key = t._QualifierVocab_key ' + \
+                        'and t._AnnotType_key = %s\n' % (annotTypeKey), 'auto')
+
+	for r in results:
+	    qualifierDict[r['abbreviation']] = r['_Term_key']
+
+    if qualifierDict.has_key(qualifier):
+        qualifierKey = qualifierDict[qualifier]
+    else:
+	if errorFile != None:
+            errorFile.write('Invalid Qualifier (%d): %s\n' % (lineNum, qualifier))
+
+    return qualifierKey
+
 # $Log$
+# Revision 1.2  2003/09/25 12:40:33  lec
+# new
+#
 # Revision 1.1  2003/09/24 17:35:26  lec
 # new
 #

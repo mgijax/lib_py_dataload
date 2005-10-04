@@ -65,7 +65,7 @@ def verifyAge(
 
     ageMin, ageMax = agelib.ageMinMax(age)
 
-    if ageMin == -1.0:
+    if ageMin is None:
 	if errorFile != None:
             errorFile.write('Invalid Age (line: %d) %s\n' % (lineNum, age))
 
@@ -402,6 +402,9 @@ def verifyVectorType(
         return 0
 
 # $Log$
+# Revision 1.9  2005/06/30 13:43:19  lec
+# fix verifyAge
+#
 # Revision 1.8  2005/06/30 13:36:17  lec
 # fix verifyAge
 #
