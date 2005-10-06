@@ -1,3 +1,9 @@
+TAG: lib_py_dataload-3-5-0-1
+DATE: 10/06/2005
+STAFF: lec
+CHANGES:
+1) vocabloadlib.py; added verifyQualifier
+
 TAG: lib_py_dataload-3-2-2-1
 DATE: 06/30/2005
 STAFF: lec
