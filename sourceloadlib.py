@@ -217,26 +217,6 @@ def verifyOrganism(
             organismDict[organism] = r['_Organism_key']
             return r['_Organism_key'] 
 
-# Purpose: verifies the Sex
-# Returns: 0 if the Sex value is invalid
-#		else the Sex value
-# Assumes: nothing
-# Effects: writes to the error log if the Sex is invalid
-# Throws: nothing
-
-def verifySex(
-    gender, 		# the Sex value from the input file (string)
-    lineNum,		# the line number (from the input file) on which this value was found (integer)
-    errorFile	 # error file (file descriptor)
-    ):
-
-    if gender in genderList:
-        return gender 
-    else:
-	if errorFile != None:
-            errorFile.write('Invalid Gender (line: %d): %s\n' % (lineNum, gender))
-        return 0
-
 # Purpose: verifies the Source
 # Returns: 0 if the Source
 #		else the primary key of the Source
@@ -402,6 +382,9 @@ def verifyVectorType(
         return 0
 
 # $Log$
+# Revision 1.10  2005/10/04 19:21:40  lec
+# TR 5188
+#
 # Revision 1.9  2005/06/30 13:43:19  lec
 # fix verifyAge
 #

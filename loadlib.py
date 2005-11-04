@@ -317,6 +317,15 @@ def verifyTerm(
 
     return termKey
 
+# Purpose:  verify User
+# Returns:  User Key if User is valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the User exists either in the User dictionary or the database
+#	by the User ID 
+#	writes to the error file if the User is invalid
+#	adds the User id and key to the User dictionary if the User is valid
+# Throws:  nothing
+
 def verifyUser(
     userID, 	# User ID (string)
     lineNum,	# line number (integer)
@@ -370,6 +379,9 @@ def verifyMarkerType(
     return markerTypeKey
 
 # $Log$
+# Revision 1.8  2005/03/16 14:26:46  lec
+# verifyUser
+#
 # Revision 1.7  2004/02/04 14:00:21  lec
 # JSAM
 #
@@ -386,6 +398,9 @@ def verifyMarkerType(
 # new
 #
 # $Log$
+# Revision 1.8  2005/03/16 14:26:46  lec
+# verifyUser
+#
 # Revision 1.7  2004/02/04 14:00:21  lec
 # JSAM
 #
