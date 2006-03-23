@@ -34,6 +34,7 @@
 import sys
 import os
 import db
+import mgi_utils
 
 #globals
 
@@ -102,6 +103,9 @@ def verifyQualifier(
 	for r in results:
 	    qualifierDict[r['abbreviation']] = r['_Term_key']
 
+    if len(qualifier) == 0:
+	qualifier = None
+
     if qualifierDict.has_key(qualifier):
         qualifierKey = qualifierDict[qualifier]
     else:
@@ -111,6 +115,9 @@ def verifyQualifier(
     return qualifierKey
 
 # $Log$
+# Revision 1.3  2005/10/04 19:21:40  lec
+# TR 5188
+#
 # Revision 1.2  2003/09/25 12:40:33  lec
 # new
 #
