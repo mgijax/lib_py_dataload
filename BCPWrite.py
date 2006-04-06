@@ -215,7 +215,7 @@ SEP = "|"
 NL = "\n"
 
 from types import *
-import string, sys, os
+import re, string, sys, os
 
 
 class BCPWrite:
@@ -609,9 +609,9 @@ class BCPWrite:
 		# replace all standalone single quotes with double single quotes
 		#    couldn't get | pattern "(^|[^'])'($|[^'])" to work...
 		# leading , trailing and embedded:
-		val = regsub.sub ("^'[^']", "''", val)
-		val = regsub.sub ("[^']'$", "''", val)
-		return "'" + regsub.gsub ("[^']'[^']", "''", val) + "'"
+		val = re.sub ("^'[^']", "''", val)
+		val = re.sub ("[^']'$", "''", val)
+		return "'" + re.sub ("[^']'[^']", "''", val) + "'"
 	    elif singleQuote > 0:
 		return '"' + val + '"'
 
