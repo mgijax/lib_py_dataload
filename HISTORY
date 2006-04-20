@@ -1,7 +1,28 @@
+TAG: lib_py_dataload-3-5-0-1
+DATE: 04/20/2006
+STAFF: lec
+CHANGES:
+1) MGI 3.5; merge tr7062 branch
+
 TAG: lib_py_dataload-tr6594-BP
 DATE: 3/16/2006
 STAFF: dbm
 CHANGES: Branch point tag for configuration changes
+
+TAG: lib_py_dataload-tr7062-2
+DATE: 04/06/2006
+STAFF: lec
+CHANGES:
+1) MGI 3.5 (TR 7062)
+2) vocabloadlib.py; added verifyQualifier
+3) converted regsub to re
+
+TAG: lib_py_dataload-tr7062-1
+DATE: 12/06/2005
+STAFF: lec
+CHANGES:
+1) MGI 3.5 (TR 7062)
+2) vocabloadlib.py; added verifyQualifier
 
 TAG: lib_py_dataload-tr7062-BP
 DATE: 12/06/2005
