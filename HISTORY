@@ -1,8 +1,19 @@
+TAG: lib_py_dataload-3-5-0-3
+DATE: 05/01/2006
+STAFF: dbm
+CHANGES:
+1) Merge configuration changes from tr6549 branch
+
 TAG: lib_py_dataload-3-5-0-2
 DATE: 04/20/2006
 STAFF: lec
 CHANGES:
 1) MGI 3.5; merge tr7062 branch
+
+TAG: lib_py_dataload-tr6594-1
+DATE: 3/27/2006
+STAFF: dbm
+CHANGES: Initial tag for TR6594 testing
 
 TAG: lib_py_dataload-tr6594-BP
 DATE: 3/16/2006
