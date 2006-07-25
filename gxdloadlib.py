@@ -321,7 +321,7 @@ def verifyHybridization(
 	return 1
     else:
 	if errorFile != None:
-            errorFile.write('Invalid Prep Type (%d): %s\n' % (lineNum, hybridization))
+            errorFile.write('Invalid Hybridization (%d): %s\n' % (lineNum, hybridization))
         return 0
 
 # Purpose:  verify Index Assay
@@ -687,6 +687,9 @@ def verifyStructure(
     return structureKey
 
 # $Log$
+# Revision 1.6  2005/11/04 17:26:51  lec
+# removed verifySex, verifyImageFieldType
+#
 # Revision 1.5  2003/09/29 16:45:03  lec
 # new
 #
