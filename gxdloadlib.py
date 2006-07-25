@@ -1,8 +1,5 @@
 #!/usr/local/bin/python
 
-# $Header$
-# $Name$
-
 #
 # Program: gxdloadlib.py
 #
@@ -59,7 +56,7 @@ structureDict = {}     	# structures
 visualDict = {}         # probe visualization
 
 prepTypeList = ['DNA', 'RNA', 'Not Specified']  # probe prep types
-hybridizationList = ['section', 'whole mount', 'section from whole mount']
+hybridizationList = ['section', 'whole mount', 'section from whole mount', 'Not Specified']
 
 # Purpose:  verify Assay Type
 # Returns:  Assay Type key if valid, else 0
@@ -686,22 +683,3 @@ def verifyStructure(
 
     return structureKey
 
-# $Log$
-# Revision 1.6  2005/11/04 17:26:51  lec
-# removed verifySex, verifyImageFieldType
-#
-# Revision 1.5  2003/09/29 16:45:03  lec
-# new
-#
-# Revision 1.4  2003/09/25 12:40:29  lec
-# new
-#
-# Revision 1.3  2003/09/24 17:35:25  lec
-# new
-#
-# Revision 1.2  2003/09/23 19:48:11  lec
-# new
-#
-# Revision 1.1  2003/09/23 19:44:15  lec
-# new
-#
