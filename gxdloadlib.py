@@ -668,10 +668,11 @@ def verifyStructure(
         structureKey = structureDict[key]
     else:
 	results = db.sql('select s._Structure_key ' + \
-		'from GXD_Structure s, GXD_TheilerStage t ' + \
+		'from GXD_Structure s, GXD_TheilerStage t, GXD_StructureName n ' + \
 		'where s._Stage_key = t._Stage_key ' + \
 		'and t.stage = %s ' % (str(theilerStage)) + \
-		'and s.printName = "%s" ' % (structureName), 'auto')
+		'and s._StructureName_key = n._StructureName_key ' + \
+		'and n.structure = "%s" ' % (structureName), 'auto')
         if len(results) == 0:
 	    if errorFile != None:
                 errorFile.write('Invalid Structure (%d): %s:%s\n' % (lineNum, structureName, theilerStage))
