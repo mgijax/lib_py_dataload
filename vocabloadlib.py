@@ -83,9 +83,9 @@ def verifyEvidence(
 def verifyQualifier(
     qualifier, 	  # Qualifier value (string)
     annotTypeKey, # Annotation Type key, (string)
-    byAbbrev = 1, # Compare by Abbreviation (1) or by Term (0)
+    byAbbrev, 	  # Compare by Abbreviation (1) or by Term (0)
     lineNum,	  # line number (integer)
-    errorFile	   # error file (file descriptor)
+    errorFile	  # error file (file descriptor)
     ):
 
     global qualifierDict
