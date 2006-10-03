@@ -1,8 +1,5 @@
 #!/usr/local/bin/python
 
-# $Header$
-# $Name$
-
 #
 # Program: vocabloadlib.py
 #
@@ -86,6 +83,7 @@ def verifyEvidence(
 def verifyQualifier(
     qualifier, 	  # Qualifier value (string)
     annotTypeKey, # Annotation Type key, (string)
+    byAbbrev = 1, # Compare by Abbreviation (1) or by Term (0)
     lineNum,	  # line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -95,13 +93,24 @@ def verifyQualifier(
     qualifierKey = 0
 
     if len(qualifierDict) == 0:
-        results = db.sql('select e._Term_key, e.abbreviation ' + \
+
+	if byAbbrev:
+            results = db.sql('select e._Term_key, e.abbreviation ' + \
                         'from VOC_Term e, VOC_AnnotType t ' + \
                         'where e._Vocab_key = t._QualifierVocab_key ' + \
                         'and t._AnnotType_key = %s\n' % (annotTypeKey), 'auto')
 
-	for r in results:
-	    qualifierDict[r['abbreviation']] = r['_Term_key']
+	    for r in results:
+	        qualifierDict[r['abbreviation']] = r['_Term_key']
+
+	else:
+            results = db.sql('select e._Term_key, e.term ' + \
+                        'from VOC_Term e, VOC_AnnotType t ' + \
+                        'where e._Vocab_key = t._QualifierVocab_key ' + \
+                        'and t._AnnotType_key = %s\n' % (annotTypeKey), 'auto')
+
+	    for r in results:
+	        qualifierDict[r['term']] = r['_Term_key']
 
     if len(qualifier) == 0:
 	qualifier = None
@@ -114,17 +123,3 @@ def verifyQualifier(
 
     return qualifierKey
 
-# $Log$
-# Revision 1.3.2.1  2006/03/23 18:27:05  lec
-# MGI 3.5
-#
-# Revision 1.3  2005/10/04 19:21:40  lec
-# TR 5188
-#
-# Revision 1.2  2003/09/25 12:40:33  lec
-# new
-#
-# Revision 1.1  2003/09/24 17:35:26  lec
-# new
-#
-#

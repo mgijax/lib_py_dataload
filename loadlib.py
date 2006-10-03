@@ -1,8 +1,5 @@
 #!/usr/local/bin/python
 
-# $Header$
-# $Name$
-
 #
 # Program: loadlib.py
 #
@@ -378,47 +375,3 @@ def verifyMarkerType(
 
     return markerTypeKey
 
-# $Log$
-# Revision 1.8  2005/03/16 14:26:46  lec
-# verifyUser
-#
-# Revision 1.7  2004/02/04 14:00:21  lec
-# JSAM
-#
-# Revision 1.6  2004/01/14 20:22:26  lec
-# fix logicalDBDict
-#
-# Revision 1.5  2003/09/25 13:04:45  lec
-# new
-#
-# Revision 1.4  2003/09/25 12:40:30  lec
-# new
-#
-# Revision 1.3  2003/09/25 12:11:48  lec
-# new
-#
-# $Log$
-# Revision 1.8  2005/03/16 14:26:46  lec
-# verifyUser
-#
-# Revision 1.7  2004/02/04 14:00:21  lec
-# JSAM
-#
-# Revision 1.6  2004/01/14 20:22:26  lec
-# fix logicalDBDict
-#
-# Revision 1.5  2003/09/25 13:04:45  lec
-# new
-#
-# Revision 1.4  2003/09/25 12:40:30  lec
-# new
-#
-# Revision 1.3  2003/09/25 12:11:48  lec
-# new
-#
-# Revision 1.2  2003/09/24 17:35:25  lec
-# new
-#
-# Revision 1.1  2003/09/23 19:44:16  lec
-# new
-#

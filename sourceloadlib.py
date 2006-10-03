@@ -1,8 +1,5 @@
 #!/usr/local/bin/python
 
-# $Header$
-# $Name$
-
 #
 # Program: sourceloadlib.py
 #
@@ -381,35 +378,3 @@ def verifyVectorType(
             errorFile.write('Invalid VectorType (line: %d) %s\n' % (lineNum, vectorType))
         return 0
 
-# $Log$
-# Revision 1.10  2005/10/04 19:21:40  lec
-# TR 5188
-#
-# Revision 1.9  2005/06/30 13:43:19  lec
-# fix verifyAge
-#
-# Revision 1.8  2005/06/30 13:36:17  lec
-# fix verifyAge
-#
-# Revision 1.7  2004/08/27 18:57:20  lec
-# TR6118
-#
-# Revision 1.6  2004/08/23 16:11:26  lec
-# JSAM
-#
-# Revision 1.5  2004/01/14 20:25:05  lec
-# fix
-#
-# Revision 1.4  2004/01/14 20:23:56  lec
-# fix
-#
-# Revision 1.3  2004/01/14 20:23:38  lec
-# fix
-#
-# Revision 1.2  2004/01/14 18:49:35  lec
-# updated
-#
-# Revision 1.1  2003/09/25 12:40:32  lec
-# new
-#
-#

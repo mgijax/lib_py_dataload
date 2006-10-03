@@ -1,8 +1,5 @@
 #!/usr/local/bin/python
 
-# $Header$
-# $Name$
-
 #
 # Program: nomenloadlib.py
 #
@@ -69,4 +66,3 @@ def verifyNomenStatus(
 
     return statusKey
 
-# $Log$

@@ -1,8 +1,5 @@
 #!/usr/local/bin/python
 
-# $Header$
-# $Name$
-
 #
 # Program: mappingloadlib.py
 #
@@ -69,4 +66,3 @@ def verifyAssay(
 
     return assayKey
 
-# $Log$
