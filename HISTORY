@@ -1,8 +1,10 @@
+TAG: lib_py_dataload-3-5-1-2
 TAG: lib_py_dataload-3-5-1-1
 DATE: 10/03/2006
 STAFF: lec
 CHANGES:
 1) vocabloadlib.py/verifyQualifier
+2) converted regex to re
 
 TAG: lib_py_dataload-3-5-0-5
 DATE: 07/26/2006
