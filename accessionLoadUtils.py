@@ -370,7 +370,7 @@
 # """
 
 
-import regex, string, sys
+import re, string, sys
 from types import *
 
 import db
@@ -1685,9 +1685,7 @@ class MGIAccKey ( Sequencible ):
 		self.dbUpdated = 0
 	    return keyWas
 		   
-
-
-re_accNumpart = regex.compile ("[0-9]+$")		    # for accSplit()
+re_accNumpart = re.compile ("[0-9]+$")		    # for accSplit()
 
 def accSplit ( s ):
     """
@@ -1704,11 +1702,14 @@ def accSplit ( s ):
     # COMMENTS:  
     #--------------------------------------------------
 
-    splitAt = re_accNumpart.search(s)
-    if splitAt == -1:					# not found
-	splitAt = len(s)+1				    # so all prefix
-    return (s[:splitAt], s[splitAt:])
+    split_result = re_accNumpart.search(s)
 
+    if split_result is None:				# not found
+	splitAt = len(s)+1			    # so all prefix
+    else:
+	splitAt = split_result.start()
+
+    return (s[:splitAt], s[splitAt:])
 
 
 def sql (qry, server=None, database=None, user=None, password=None ):
