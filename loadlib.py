@@ -331,17 +331,20 @@ def verifyUser(
 
     global userDict
 
-    if len(userDict) == 0:
-        results = db.sql('select _User_key, login from MGI_User', 'auto')
-        for r in results:
-            userDict[r['login']] = r['_User_key']
-
     if userDict.has_key(userID):
         userKey = userDict[userID]
+
     else:
+        results = db.sql('select _User_key from MGI_User where login = "%s" ' % (userID), 'auto')
+        for r in results:
+            userKey = r['_User_key']
+
+    if userKey is None:
 	if errorFile != None:
             errorFile.write('Invalid User (%d): %s\n' % (lineNum, userID))
         userKey = 0
+    else:
+	userDict[userID] = userKey
 
     return userKey
 
