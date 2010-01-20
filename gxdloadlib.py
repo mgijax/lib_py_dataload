@@ -27,6 +27,9 @@
 #
 # Implementation:
 #
+# 01/20/2010	lec
+#	- TR9560; remove verifyPrepCoverage
+#
 
 import sys
 import os
@@ -410,36 +413,6 @@ def verifyIdxStage(
             errorFile.write('Invalid Index Stage (%d): %s\n' % (lineNum, idxstage))
 
     return idxstageKey
-
-# Purpose:  verify Probe Prep Coverage
-# Returns:  Probe Prep Coverage key if valid, else 0
-# Assumes:  nothing
-# Effects:  verifies that the Prep Coverage exists in the Coverage dictionary
-#	writes to the error file if the Prep Coverage is invalid
-# Throws:  nothing
-
-def verifyPrepCoverage(
-    coverage, 	# Coverage value (string)
-    lineNum,	# line number (integer)
-    errorFile	   # error file (file descriptor)
-    ):
-
-    global coverageDict
-
-    coverageKey = 0
-
-    if len(coverageDict) == 0:
-	results = db.sql('select _Coverage_key, coverage from GXD_LabelCoverage', 'auto')
-	for r in results:
-	    coverageDict[r['coverage']] = r['_Coverage_key']
-
-    if coverageDict.has_key(coverage):
-        coverageKey = coverageDict[coverage]
-    else:
-	if errorFile != None:
-            errorFile.write('Invalid Prep Coverage (%d): %s\n' % (lineNum, coverage))
-
-    return coverageKey
 
 # Purpose:  verify Probe Prep Label
 # Returns:  Probe Prep Label key if valid, else 0
