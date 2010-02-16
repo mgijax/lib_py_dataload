@@ -242,7 +242,7 @@ def verifySource(
     if sourceDict.has_key(source):
         return sourceDict[source] 
     else:
-        results = db.sql('select _Source_key from PRB_Source where ' + \
+        sourceQuery = 'select _Source_key from PRB_Source where ' + \
 		'_SegmentType_key = %s ' % (segmentTypeKey) + \
 		'and _Vector_key = %s ' % (vectorKey) + \
 		'and _Organism_key = %s ' % (organismKey) + \
@@ -251,11 +251,13 @@ def verifySource(
 		'and _Gender_key = %s ' % (genderKey) + \
 		'and _CellLine_key = %s ' % (cellLineKey) + \
 		'and age = "%s" ' % (age) + \
-		'and isCuratorEdited = 0 ', 'auto')
+		'and isCuratorEdited = 0 '
+
+        results = db.sql(sourceQuery, 'auto')
 
 	if len(results) == 0:
 	    if errorFile != None:
-                errorFile.write('Invalid Source (line: %d) %s\n' % (lineNum, source))
+                errorFile.write('Invalid Source (line: %d) %s\n%s\n\n' % (lineNum, source, sourceQuery))
 	    return 0
 
         for r in results:
