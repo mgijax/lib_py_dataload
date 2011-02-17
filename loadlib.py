@@ -331,6 +331,8 @@ def verifyUser(
 
     global userDict
 
+    userKey = None
+
     if userDict.has_key(userID):
         userKey = userDict[userID]
 
