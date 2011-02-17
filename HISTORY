@@ -1,3 +1,9 @@
+TAG: lib_py_dataload-4-4-1-1
+DATE: 02/17/2011
+STAFF: lec
+CHANGES:
+1) loadlib.py/verifyUser/declare userKey
+
 TAG: lib_py_dataload-4-3-3-2
 DATE: 02/16/2010
 STAFF: lec
