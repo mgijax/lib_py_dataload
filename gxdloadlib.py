@@ -342,7 +342,7 @@ def verifyIdxAssay(
     idxassayKey = 0
 
     if len(idxassayDict) == 0:
-	results = db.sql('select _Term_key, term from VOC_Term_GXDIndexAssay_View', 'auto')
+	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 12, 'auto')
 	for r in results:
 	    idxassayDict[r['term']] = r['_Term_key']
 
@@ -372,7 +372,7 @@ def verifyIdxPriority(
     idxpriorityKey = 0
 
     if len(idxpriorityDict) == 0:
-	results = db.sql('select _Term_key, term from VOC_Term_GXDIndexPriority_View', 'auto')
+	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 11', 'auto')
 	for r in results:
 	    idxpriorityDict[r['term']] = r['_Term_key']
 
@@ -402,7 +402,7 @@ def verifyIdxStage(
     idxstageKey = 0
 
     if len(idxstageDict) == 0:
-	results = db.sql('select _Term_key, term from VOC_Term_GXDIndexStage_View', 'auto')
+	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 13', 'auto')
 	for r in results:
 	    idxstageDict[r['term']] = r['_Term_key']
 
@@ -604,7 +604,7 @@ def verifyReporterGene(
     reporterGeneKey = 0
 
     if len(reporterGeneDict) == 0:
-	results = db.sql('select _Term_key, term from VOC_Term_GXDReporterGene_View', 'auto')
+	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 14', 'auto')
 	for r in results:
 	    reporterGeneDict[r['term']] = r['_Term_key']
 
