@@ -85,7 +85,7 @@ def verifyCellLine(
     global cellLineDict
 
     if len(cellLineDict) == 0:
-        results = db.sql('select _Term_key, term from VOC_Term_CellLine_View', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 18', 'auto')
         for r in results:
             cellLineDict[r['term']] = r['_Term_key']
 
@@ -173,7 +173,7 @@ def verifyGender(
     global genderDict
 
     if len(genderDict) == 0:
-        results = db.sql('select _Term_key, term from VOC_Term_Gender_View', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 17', 'auto')
         for r in results:
             genderDict[r['term']] = r['_Term_key']
 
@@ -341,7 +341,7 @@ def verifySegmentType(
     global segmentTypeDict
 
     if len(segmentTypeDict) == 0:
-        results = db.sql('select _Term_key, term from VOC_Term_SegmentType_View', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 10', 'auto')
         for r in results:
             segmentTypeDict[r['term']] = r['_Term_key']
 
@@ -369,7 +369,7 @@ def verifyVectorType(
     global vectorTypeDict
 
     if len(vectorTypeDict) == 0:
-        results = db.sql('select _Term_key, term from VOC_Term_SegVectorType_View', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 24 'auto')
         for r in results:
             vectorTypeDict[r['term']] = r['_Term_key']
 
