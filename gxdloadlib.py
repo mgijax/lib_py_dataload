@@ -342,7 +342,7 @@ def verifyIdxAssay(
     idxassayKey = 0
 
     if len(idxassayDict) == 0:
-	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 12, 'auto')
+	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 12', 'auto')
 	for r in results:
 	    idxassayDict[r['term']] = r['_Term_key']
 

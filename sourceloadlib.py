@@ -369,7 +369,7 @@ def verifyVectorType(
     global vectorTypeDict
 
     if len(vectorTypeDict) == 0:
-        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 24 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 24', 'auto')
         for r in results:
             vectorTypeDict[r['term']] = r['_Term_key']
 
