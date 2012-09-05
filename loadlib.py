@@ -108,6 +108,7 @@ def verifyMarker(
         results = db.sql('select a._Object_key ' + \
 	    'from MRK_Acc_View a, MRK_Marker m, MGI_Organism o ' + \
 	    'where a.accID = "%s" ' % (markerID) + \
+	    'and a._LogicalDB_key = 1 ' + \
 	    'and a._Object_key = m._Marker_key ' + \
 	    'and m._Organism_key = o._Organism_key ' + \
 	    'and o.commonName = "%s" ' % (organism), 'auto')
