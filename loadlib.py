@@ -308,7 +308,7 @@ def verifyTerm(
 
     if termKey is None:
 	if errorFile != None:
-            errorFile.write('Invalid Term (%d) %s\n' % (lineNum, termID))
+            errorFile.write('Invalid Term (row:[%d]: termID:[%s] term [%s]\n' % (lineNum, termID, termDescription))
         termKey = 0
     else:
         termDict[termID] = termKey
