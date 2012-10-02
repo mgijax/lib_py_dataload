@@ -47,30 +47,30 @@ mutantCellLineDict = {}      # mutant cell line
 # Throws:  nothing
 
 def verifyMutnatCellLine(
-    mutantCellLine, 	# Mutant Clel Line value (string)
-    lineNum,		# line number (integer)
-    errorFile	   	# error file (file descriptor)
+    mutantCellLine,      # mutant name (string)
+    lineNum,		 # line number (integer)
+    errorFile            # error file (file descriptor)
     ):
 
     global mutantCellLineDict
 
-    mutantCellLineKey = 0
-
-    if len(mutantCellLineDict) == 0:
+    if mutantCellLineDict.has_key(mutantCellLine):
+        mutantCellLineKey = mutantCellLineDict[mutantCellLine]
+    else:
 	results = db.sql('''
 		select _CellLine_key, cellLine 
 		from ALL_CellLine
 		where cellLine = '%s'
 		and isMutant = 1
 		''' % (mutantCellLine), 'auto')
-	for r in results:
-	    mutantCellLineDict[r['cellLine']] = r['_CellLine_key']
-
-    if mutantCellLineDict.has_key(mutantCellLine):
-        mutantCellLineKey = mutantCellLineDict[mutantCellLine]
-    else:
-	if errorFile != None:
-            errorFile.write('Invalid Mutant Cell Line (%d): %s\n' % (lineNum, mutantCellLine))
+        if len(results) == 0:
+	    if errorFile != None:
+                errorFile.write('Invalid Mutant CellLine (%d): %s\n' % (lineNum, mutantCellLine))
+            mutantCellLineKey = 0
+        else:
+	    for r in results:
+                mutantCellLineKey = r['_CellLine_key']
+                mutantCellLineDict[mutantCellLine] = mutantCellLineKey
 
     return mutantCellLineKey
 
