@@ -396,9 +396,17 @@ class UniGeneSIDs:
 	line = fd.readline ()
 	while line and line[:-1] != "//":
 	    words = string.split (line[:-1])
+
+	    # TR11537 : skip row if it contains blanks
+            if len(words) == 0:
+	    	line = fd.readline()
+                continue
+
 	    tag = words[0]
+
 	    if tag == "ID":
 		ugid = words[1]
+
 	    elif tag == "SEQUENCE" and words[1][:4] == "ACC=":
 		# extract the GenBank ID from form "ACC=.*;" & accummulate
 		tempid = words[1][4:-1]
