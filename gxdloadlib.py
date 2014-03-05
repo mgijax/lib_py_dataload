@@ -27,6 +27,9 @@
 #
 # Implementation:
 #
+# 03/05/2014	lec
+#	- TR11471/verifyPrepAntibody/verifyPrepSecondary
+#
 # 01/20/2010	lec
 #	- TR9560; remove verifyPrepCoverage
 #
@@ -38,6 +41,7 @@ import accessionlib
 
 #globals
 
+antibodyDict = {}       # antibody
 assayTypeDict = {}      # assay type
 coverageDict = {}       # probe coverage
 embeddingDict = {}      # embedding method
@@ -53,6 +57,7 @@ idxstageDict = {}	# index stage
 labelDict = {}          # probe label
 patternDict = {}        # pattern
 reporterGeneDict = {}   # reporter gene
+secondaryDict = {}      # antibody/secondary antibody
 senseDict = {}          # probe sense
 strengthDict = {}       # strength
 structureDict = {}     	# structures
@@ -60,6 +65,40 @@ visualDict = {}         # probe visualization
 
 prepTypeList = ['DNA', 'RNA', 'Not Specified']  # probe prep types
 hybridizationList = ['section', 'whole mount', 'section from whole mount', 'Not Specified']
+
+# Purpose:  verify Antibody Accession ID
+# Returns:  Antibody Key if Antibody is valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Antibody exists either in the Antibody dictionary or the database
+#	writes to the error file if the Antibody is invalid
+#	adds the Antibody id and key to the Antibody dictionary if the Antibody is valid
+# Throws:  nothing
+
+def verifyAntibody(
+    antibodyID,	# Accession ID of the Antibody (string)
+    lineNum,	# line number (integer)
+    errorFile   # error file (file descriptor)
+    ):
+
+    global antibodyDict
+
+    antibodyKey = 0
+
+    if antibodyDict.has_key(antibodyID):
+        return antibodyDict[antibodyID]
+    else:
+	results = db.sql('select _Object_key from ACC_Accession where _MGIType_key = 6 and accID = "%s" ' % (antibodyID), 'auto')
+
+        for r in results:
+            if r['_Object_key'] is None:
+		if errorFile != None:
+                    errorFile.write('Invalid Mouse Probe (%d) %s\n' % (lineNum, antibodyID))
+                antibodyKey = 0
+            else:
+                antibodyKey = r['_Object_key']
+                antibodyDict[antibodyID] = antibodyKey
+
+    return antibodyKey
 
 # Purpose:  verify Assay Type
 # Returns:  Assay Type key if valid, else 0
@@ -443,6 +482,36 @@ def verifyPrepLabel(
             errorFile.write('Invalid Prep Label (%d): %s\n' % (lineNum, label))
 
     return labelKey
+
+# Purpose:  verify Antibody Prep Secondary
+# Returns:  Antibody Prep Secondary key if valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Prep Secondary exists in the secondary dictionary
+#	writes to the error file if the Prep Secondary is invalid
+# Throws:  nothing
+
+def verifyPrepSecondary(
+    secondary, 	# Secondary value (string)
+    lineNum,	# line number (integer)
+    errorFile	   # error file (file descriptor)
+    ):
+
+    global secondaryDict
+
+    secondaryKey = 0
+
+    if len(secondaryDict) == 0:
+	results = db.sql('select _Secondary_key, secondary from GXD_Secondary', 'auto')
+	for r in results:
+	    secondaryDict[r['secondary']] = r['_Secondary_key']
+
+    if secondaryDict.has_key(secondary):
+        secondaryKey = secondaryDict[secondary]
+    else:
+	if errorFile != None:
+            errorFile.write('Invalid Prep Secondary (%d): %s\n' % (lineNum, secondary))
+
+    return secondaryKey
 
 # Purpose:  verify Probe Prep Sense
 # Returns:  Probe Prep Sense key if valid, else 0
