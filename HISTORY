@@ -1,3 +1,9 @@
+TAG: lib_py_dataload-5-2-1-1
+DATE: 01/02/2015
+STAFF: lec
+CHANGES:
+1) TR11740/postgres:added postgres flipping
+
 TAG: lib_py_dataload-5-1-7-1
 DATE: 03/05/2014
 STAFF: lec
