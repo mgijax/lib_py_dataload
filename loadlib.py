@@ -207,12 +207,12 @@ def verifyObject(
             for r in results:
                 objectKey = r['_Object_key']
 
+    objectDict[objectID] = objectKey
+
     if objectKey is None:
 	if errorFile != None:
             errorFile.write('Invalid Object (%d) %s\n' % (lineNum, objectID))
         objectKey = 0
-    else:
-        objectDict[objectID] = objectKey
 
     return objectKey
 
@@ -270,12 +270,13 @@ def verifyReference(
         referenceKey = referenceDict[referenceID]
     else:
         referenceKey = accessionlib.get_Object_key(referenceID, 'Reference')
+
+	referenceDict[referenceID] = referenceKey
+
         if referenceKey is None:
 	    if errorFile != None:
                 errorFile.write('Invalid Reference (%d): %s\n' % (lineNum, referenceID))
             referenceKey = 0
-        else:
-            referenceDict[referenceID] = referenceKey
 
     return referenceKey
 
@@ -317,12 +318,12 @@ def verifyTerm(
         for r in results:
             termKey = r['_Term_key']
 
+    termDict[termID] = termKey
+
     if termKey is None:
 	if errorFile != None:
             errorFile.write('Invalid Term (row:[%d]: termID:[%s] term [%s]\n' % (lineNum, termID, termDescription))
         termKey = 0
-    else:
-        termDict[termID] = termKey
 
     return termKey
 
@@ -353,12 +354,12 @@ def verifyUser(
         for r in results:
             userKey = r['_User_key']
 
+    userDict[userID] = userKey
+
     if userKey is None:
 	if errorFile != None:
             errorFile.write('Invalid User (%d): %s\n' % (lineNum, userID))
         userKey = 0
-    else:
-	userDict[userID] = userKey
 
     return userKey
 
