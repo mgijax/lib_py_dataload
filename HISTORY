@@ -1,3 +1,10 @@
+TAG: TO REMOVE AFTER POSTGRES
+DATE: 06/05/2015
+STAFF: lec
+CHANGES:
+1) unigeneLib.py : remove
+this was moved to unigeneload-tr11750
+
 TAG: lib_py_dataload-5-2-1-1
 DATE: 01/02/2015
 STAFF: lec
