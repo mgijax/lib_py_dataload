@@ -1,9 +1,11 @@
+TAG: lib_py_dataload-5-2-2-3
 TAG: lib_py_dataload-5-2-2-2
 TAG: lib_py_dataload-5-2-2-1
 DATE: 06/05/2015
 STAFF: lec
 CHANGES:
 1) unigeneLib.py : moved to unigeneload
+2) mappingloadlib.py, nomenloadlib.py : obsolete
 
 TAG: lib_py_dataload-5-2-1-1
 DATE: 01/02/2015
