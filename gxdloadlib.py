@@ -37,18 +37,11 @@
 import sys
 import os
 import accessionlib
+import db
 
-try:
-    if os.environ['DB_TYPE'] == 'postgres':
-        import pg_db
-        db = pg_db
-        db.setTrace()
-        db.setAutoTranslateBE()
-    else:
-        import db
-
-except:
-    import db
+db.setTrace()
+db.setAutoTranslate(False)
+db.setAutoTranslateBE(False)
 
 #globals
 
@@ -98,7 +91,7 @@ def verifyAntibody(
     if antibodyDict.has_key(antibodyID):
         return antibodyDict[antibodyID]
     else:
-	results = db.sql('select _Object_key from ACC_Accession where _MGIType_key = 6 and accID = "%s" ' % (antibodyID), 'auto')
+	results = db.sql('select _Object_key from ACC_Accession where _MGIType_key = 6 and accID = \'%s\' ' % (antibodyID), 'auto')
 
         for r in results:
             if r['_Object_key'] is None:
@@ -724,7 +717,7 @@ def verifyStructure(
 		'from GXD_Structure s, GXD_TheilerStage t ' + \
 		'where s._Stage_key = t._Stage_key ' + \
 		'and t.stage = %s ' % (str(theilerStage)) + \
-		'and s.printName = "%s" ' % (structureName), 'auto')
+		'and s.printName = \'%s\' ' % (structureName), 'auto')
         if len(results) == 0:
 	    if errorFile != None:
                 errorFile.write('Invalid Structure (%d): %s:%s\n' % (lineNum, structureName, theilerStage))

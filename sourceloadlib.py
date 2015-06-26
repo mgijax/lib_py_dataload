@@ -31,18 +31,11 @@
 import sys
 import os
 import agelib
+import db
 
-try:
-    if os.environ['DB_TYPE'] == 'postgres':
-        import pg_db
-        db = pg_db
-        db.setTrace()
-        db.setAutoTranslateBE()
-    else:
-        import db
-
-except:
-    import db
+db.setTrace()
+db.setAutoTranslate(False)
+db.setAutoTranslateBE(False)
 
 #globals
 
@@ -215,7 +208,7 @@ def verifyOrganism(
     if organismDict.has_key(organism):
         return organismDict[organism] 
     else:
-        results = db.sql('select _Organism_key from MGI_Organism where commonName = "%s"' % (organism), 'auto')
+        results = db.sql('select _Organism_key from MGI_Organism where commonName = \'%s\'' % (organism), 'auto')
 
 	if len(results) == 0:
 	    if errorFile != None:
@@ -262,7 +255,7 @@ def verifySource(
 		'and _Tissue_key = %s ' % (tissueKey) + \
 		'and _Gender_key = %s ' % (genderKey) + \
 		'and _CellLine_key = %s ' % (cellLineKey) + \
-		'and age = "%s" ' % (age) + \
+		'and age = \'%s\' ' % (age) + \
 		'and isCuratorEdited = 0 '
 
         results = db.sql(sourceQuery, 'auto')
@@ -297,7 +290,7 @@ def verifyStrain(
     else:
         results = db.sql('select s._Strain_key ' + \
             'from PRB_Strain s ' + \
-            'where s.strain = "%s" ' % (strain), 'auto')
+            'where s.strain = \'%s\' ' % (strain), 'auto')
 
 	if len(results) == 0:
 	    if errorFile != None:
@@ -329,7 +322,7 @@ def verifyStrainID(
     else:
         results = db.sql('select a.accID ' + \
             'from PRB_Strain s, ACC_Accession a ' + \
-            'where s.strain = "%s" '% (strain) + \
+            'where s.strain = \'%s\' '% (strain) + \
 	    'and s._Strain_key = a._Object_key ' + \
 	    'and a._MGIType_key = 10 ' + \
 	    'and a._LogicalDB_key = 1 ' + \

@@ -33,18 +33,11 @@ import os
 import string
 import mgi_utils
 import accessionlib
+import db
 
-try:
-    if os.environ['DB_TYPE'] == 'postgres':
-        import pg_db
-        db = pg_db
-        db.setTrace()
-        db.setAutoTranslateBE()
-    else:
-        import db
-
-except:
-    import db
+db.setTrace()
+db.setAutoTranslate(False)
+db.setAutoTranslateBE(False)
 
 #globals
 
@@ -118,11 +111,11 @@ def verifyMarker(
     else:
         results = db.sql('select a._Object_key ' + \
 	    'from MRK_Acc_View a, MRK_Marker m, MGI_Organism o ' + \
-	    'where a.accID = "%s" ' % (markerID) + \
+	    'where a.accID = \'%s\' ' % (markerID) + \
 	    'and a._LogicalDB_key = 1 ' + \
 	    'and a._Object_key = m._Marker_key ' + \
 	    'and m._Organism_key = o._Organism_key ' + \
-	    'and o.commonName = "%s" ' % (organism), 'auto')
+	    'and o.commonName = \'%s\' ' % (organism), 'auto')
 
         for r in results:
             if r['_Object_key'] is None:
@@ -190,7 +183,7 @@ def verifyObject(
 
     elif len(objectID) > 0:
         results = db.sql('select a._Object_key from ACC_Accession a ' + \
-            'where a.accID = "%s" ' % (objectID) + \
+            'where a.accID = \'%s\' ' % (objectID) + \
             'and a._MGIType_key = %s' % (mgiTypeKey), 'auto')
 
         for r in results:
@@ -202,7 +195,7 @@ def verifyObject(
             dbView = results[0]['dbView']
 
             results = db.sql('select _Object_key from %s ' % (dbView) + \
-	        ' where description = "%s" ' % (objectDescription), 'auto')
+	        ' where description = \'%s\' ' % (objectDescription), 'auto')
 
             for r in results:
                 objectKey = r['_Object_key']
@@ -237,7 +230,7 @@ def verifyProbe(
     if probeDict.has_key(probeID):
         return probeDict[probeID]
     else:
-        results = db.sql('select _Object_key from PRB_Acc_View where accID = "%s" ' % (probeID), 'auto')
+        results = db.sql('select _Object_key from PRB_Acc_View where accID = \'%s\' ' % (probeID), 'auto')
 
         for r in results:
             if r['_Object_key'] is None:
@@ -306,13 +299,13 @@ def verifyTerm(
 
     elif len(termID) > 0:
         results = db.sql('select a._Object_key from VOC_Term_Acc_View a ' + \
-            'where a.accID = "%s" ' % (termID), 'auto')
+            'where a.accID = \'%s\' ' % (termID), 'auto')
 
         for r in results:
             termKey = r['_Object_key']
     else:
         results = db.sql('select _Term_key from VOC_Term ' + \
-		'where term = "%s" ' % (termDescription) + \
+		'where term = \'%s\' ' % (termDescription) + \
 		'and _Vocab_key = %s' % (vocabKey), 'auto')
 
         for r in results:
@@ -350,7 +343,7 @@ def verifyUser(
         userKey = userDict[userID]
 
     else:
-        results = db.sql('select _User_key from MGI_User where login = "%s" ' % (userID), 'auto')
+        results = db.sql('select _User_key from MGI_User where login = \'%s\' ' % (userID), 'auto')
         for r in results:
             userKey = r['_User_key']
 
