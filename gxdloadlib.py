@@ -39,7 +39,6 @@ import os
 import accessionlib
 import db
 
-db.setTrace()
 db.setAutoTranslate(False)
 db.setAutoTranslateBE(False)
 

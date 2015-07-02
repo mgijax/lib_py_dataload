@@ -33,7 +33,6 @@ import os
 import agelib
 import db
 
-db.setTrace()
 db.setAutoTranslate(False)
 db.setAutoTranslateBE(False)
 
