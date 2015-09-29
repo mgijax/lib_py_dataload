@@ -35,9 +35,6 @@ import mgi_utils
 import accessionlib
 import db
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 #globals
 
 logicalDBDict = {}	# logical DB
@@ -76,7 +73,7 @@ def verifyLogicalDB(
         logicalDBKey = logicalDBDict[logicalDB]
     else:
 	if errorFile != None:
-            errorFile.write('Invalid Logical DB (%d): %s\n' % (lineNum, logicalDB))
+            errorFile.write('Invalid Logical DB (row %d): %s\n' % (lineNum, logicalDB))
         logicalDBKey = 0
 
     return logicalDBKey
@@ -104,7 +101,7 @@ def verifyMarker(
     if markerDict.has_key(markerID):
 	if checkDuplicate:
 	    if errorFile != None:
-		errorFile.write('Duplicate Mouse Marker (%d) %s\n' % (lineNum, markerID))
+		errorFile.write('Duplicate Mouse Marker (row %d) %s\n' % (lineNum, markerID))
         else:
 	    markerKey = markerDict[markerID]
     else:
@@ -119,7 +116,7 @@ def verifyMarker(
         for r in results:
             if r['_Object_key'] is None:
 		if errorFile != None:
-                    errorFile.write('Invalid Marker (%d) %s\n' % (lineNum, markerID))
+                    errorFile.write('Invalid Marker (row %d) %s\n' % (lineNum, markerID))
                 markerKey = 0
             else:
                 markerKey = r['_Object_key']
@@ -151,7 +148,7 @@ def verifyMGIType(
         mgiTypeKey = mgiTypeDict[mgiType]
     else:
 	if errorFile != None:
-            errorFile.write('Invalid MGI Type (%d): %s\n' % (lineNum, mgiType))
+            errorFile.write('Invalid MGI Type (row %d): %s\n' % (lineNum, mgiType))
         mgiTypeKey = 0
 
     return mgiTypeKey
@@ -203,7 +200,7 @@ def verifyObject(
 
     if objectKey is None:
 	if errorFile != None:
-            errorFile.write('Invalid Object (%d) %s\n' % (lineNum, objectID))
+            errorFile.write('Invalid Object (row %d) %s\n' % (lineNum, objectID))
         objectKey = 0
 
     return objectKey
@@ -234,7 +231,7 @@ def verifyProbe(
         for r in results:
             if r['_Object_key'] is None:
 		if errorFile != None:
-                    errorFile.write('Invalid Mouse Probe (%d) %s\n' % (lineNum, probeID))
+                    errorFile.write('Invalid Mouse Probe (row %d) %s\n' % (lineNum, probeID))
                 probeKey = 0
             else:
                 probeKey = r['_Object_key']
@@ -267,7 +264,7 @@ def verifyReference(
 
         if referenceKey is None:
 	    if errorFile != None:
-                errorFile.write('Invalid Reference (%d): %s\n' % (lineNum, referenceID))
+                errorFile.write('Invalid Reference (row %d): %s\n' % (lineNum, referenceID))
             referenceKey = 0
 
     return referenceKey
@@ -350,7 +347,7 @@ def verifyUser(
 
     if userKey is None:
 	if errorFile != None:
-            errorFile.write('Invalid User (%d): %s\n' % (lineNum, userID))
+            errorFile.write('Invalid User (row %d): %s\n' % (lineNum, userID))
         userKey = 0
 
     return userKey
@@ -381,7 +378,7 @@ def verifyMarkerType(
         markerTypeKey = markerTypeDict[markerType]
     else:
 	if errorFile != None:
-            errorFile.write('Invalid Marker Type (%d): %s\n' % (lineNum, markerType))
+            errorFile.write('Invalid Marker Type (row %d): %s\n' % (lineNum, markerType))
 
     return markerTypeKey
 
