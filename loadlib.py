@@ -296,8 +296,9 @@ def verifyTerm(
     if len(termID) > 0 and termDict.has_key(termID):
         return termDict[termID] 
 
-    elif len(termDescription) > 0 and termDict.has_key(termDescription):
-	return termDict[termDescription]
+    elif len(termDescription) > 0 and vocabKey \
+	and termDict.has_key((vocabKey, termDescription)):
+	return termDict[(vocabKey, termDescription)]
 
     elif len(termID) > 0:
         results = db.sql('select a._Object_key from VOC_Term_Acc_View a ' + \
@@ -316,7 +317,7 @@ def verifyTerm(
         for r in results:
             termKey = r['_Term_key']
 
-	termDict[termDescription] = termKey
+	termDict[(vocabKey, termDescription)] = termKey
 
 
     if termKey is None:
