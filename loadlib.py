@@ -296,13 +296,19 @@ def verifyTerm(
     if len(termID) > 0 and termDict.has_key(termID):
         return termDict[termID] 
 
+    elif len(termDescription) > 0 and termDict.has_key(termDescription):
+	return termDict[termDescription]
+
     elif len(termID) > 0:
         results = db.sql('select a._Object_key from VOC_Term_Acc_View a ' + \
             'where a.accID = \'%s\' ' % (termID), 'auto')
 
         for r in results:
             termKey = r['_Object_key']
+
+	termDict[termID] = termKey
     else:
+	# optional search by VOC_Term.term as termDescription
         results = db.sql('select _Term_key from VOC_Term ' + \
 		'where term = \'%s\' ' % (termDescription) + \
 		'and _Vocab_key = %s' % (vocabKey), 'auto')
@@ -310,7 +316,8 @@ def verifyTerm(
         for r in results:
             termKey = r['_Term_key']
 
-    termDict[termID] = termKey
+	termDict[termDescription] = termKey
+
 
     if termKey is None:
 	if errorFile != None:
