@@ -63,7 +63,6 @@ reporterGeneDict = {}   # reporter gene
 secondaryDict = {}      # antibody/secondary antibody
 senseDict = {}          # probe sense
 strengthDict = {}       # strength
-structureDict = {}     	# structures
 visualDict = {}         # probe visualization
 
 prepTypeList = ['DNA', 'RNA', 'Not Specified']  # probe prep types
@@ -687,44 +686,4 @@ def verifyReporterGene(
             errorFile.write('Invalid Reporter Gene (%d): %s\n' % (lineNum, reporterGene))
 
     return reporterGeneKey
-
-# Purpose:  verifies the anatomical structure
-# Returns:  the primary key of the anatomical structure or 0 if invalid
-# Assumes:  nothing
-# Effects:  verifies that the Anatomical Structure exists by checking the structureDict
-#	dictionary for the Structure Name or the database.
-#	writes to the error file if the Anatomical Structure is invalid.
-#	adds the Structure Name/TS/Key to the global structureDict dictionary if the
-#	structure is valid.
-# Throws:
-
-def verifyStructure(
-    structureName,       # structure name (string)
-    theilerStage,	 # theiler stage (string)
-    lineNum,		 # line number (integer)
-    errorFile            # error file (file descriptor)
-    ):
-
-    global structureDict
-
-    key = '%s:%s' % (structureName, theilerStage)
-
-    if structureDict.has_key(key):
-        structureKey = structureDict[key]
-    else:
-	results = db.sql('select s._Structure_key ' + \
-		'from GXD_Structure s, GXD_TheilerStage t ' + \
-		'where s._Stage_key = t._Stage_key ' + \
-		'and t.stage = %s ' % (str(theilerStage)) + \
-		'and s.printName = \'%s\' ' % (structureName), 'auto')
-        if len(results) == 0:
-	    if errorFile != None:
-                errorFile.write('Invalid Structure (%d): %s:%s\n' % (lineNum, structureName, theilerStage))
-            structureKey = 0
-        else:
-	    for r in results:
-                structureKey = r['_Structure_key']
-                structureDict[key] = structureKey
-
-    return structureKey
 
