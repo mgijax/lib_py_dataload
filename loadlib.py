@@ -50,7 +50,7 @@ termDict = {}		# terms
 userDict = {}		# users
 markerTypeDict = {}	# marker types
 
-loaddate = mgi_utils.date('%m/%d/%Y')	# current date
+loaddate = mgi_utils.date('%m/%d/%Y %H:%M:%S')	# current date
 
 # Purpose: verifies the Logical DB value
 # Returns: 0 if the Logical DB value does not exist in MGI
