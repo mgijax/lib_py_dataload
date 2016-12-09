@@ -33,9 +33,6 @@ import os
 import agelib
 import db
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 #globals
 
 cellLineDict = {}

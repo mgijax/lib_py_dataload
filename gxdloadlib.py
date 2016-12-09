@@ -39,9 +39,6 @@ import os
 import accessionlib
 import db
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 #globals
 
 antibodyDict = {}       # antibody

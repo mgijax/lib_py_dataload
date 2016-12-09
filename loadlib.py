@@ -34,9 +34,6 @@ import mgi_utils
 import accessionlib
 import db
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 #globals
 
 logicalDBDict = {}	# logical DB

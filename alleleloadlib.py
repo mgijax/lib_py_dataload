@@ -35,9 +35,6 @@ import sys
 import os
 import db
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 #globals
 
 mutantCellLineDict = {}      		# mutant cell line
