@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 
 #
 # Program: gxdloadlib.py
@@ -74,7 +73,7 @@ hybridizationList = ['section', 'whole mount', 'section from whole mount', 'Not 
 # Throws:  nothing
 
 def verifyAntibody(
-    antibodyID,	# Accession ID of the Antibody (string)
+    antibodyID,	# Accession ID of the Antibody (str.
     lineNum,	# line number (integer)
     errorFile   # error file (file descriptor)
     ):
@@ -83,14 +82,14 @@ def verifyAntibody(
 
     antibodyKey = 0
 
-    if antibodyDict.has_key(antibodyID):
+    if antibodyID in antibodyDict:
         return antibodyDict[antibodyID]
     else:
-	results = db.sql('select _Object_key from ACC_Accession where _MGIType_key = 6 and accID = \'%s\' ' % (antibodyID), 'auto')
+        results = db.sql('select _Object_key from ACC_Accession where _MGIType_key = 6 and accID = \'%s\' ' % (antibodyID), 'auto')
 
         for r in results:
             if r['_Object_key'] is None:
-		if errorFile != None:
+                if errorFile != None:
                     errorFile.write('Invalid Mouse Probe (%d) %s\n' % (lineNum, antibodyID))
                 antibodyKey = 0
             else:
@@ -107,7 +106,7 @@ def verifyAntibody(
 # Throws:  nothing
 
 def verifyAssayType(
-    assayType, 	# Assay Type value (string)
+    assayType, 	# Assay Type value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -117,14 +116,14 @@ def verifyAssayType(
     assayTypeKey = 0
 
     if len(assayTypeDict) == 0:
-	results = db.sql('select _AssayType_key, assayType from GXD_AssayType', 'auto')
-	for r in results:
-	    assayTypeDict[r['assayType']] = r['_AssayType_key']
+        results = db.sql('select _AssayType_key, assayType from GXD_AssayType', 'auto')
+        for r in results:
+            assayTypeDict[r['assayType']] = r['_AssayType_key']
 
-    if assayTypeDict.has_key(assayType):
+    if assayType in assayTypeDict:
         assayTypeKey = assayTypeDict[assayType]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Assay Type (%d): %s\n' % (lineNum, assayType))
 
     return assayTypeKey
@@ -137,7 +136,7 @@ def verifyAssayType(
 # Throws:  nothing
 
 def verifyEmbeddingMethod(
-    embedding, 	# Embedding Method value (string)
+    embedding, 	# Embedding Method value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -147,14 +146,14 @@ def verifyEmbeddingMethod(
     embeddingKey = 0
 
     if len(embeddingDict) == 0:
-	results = db.sql('select _Embedding_key, embeddingMethod from GXD_EmbeddingMethod', 'auto')
-	for r in results:
-	    embeddingDict[r['embeddingMethod']] = r['_Embedding_key']
+        results = db.sql('select _Embedding_key, embeddingMethod from GXD_EmbeddingMethod', 'auto')
+        for r in results:
+            embeddingDict[r['embeddingMethod']] = r['_Embedding_key']
 
-    if embeddingDict.has_key(embedding):
+    if embedding in embeddingDict:
         embeddingKey = embeddingDict[embedding]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Embedding Method (%d): %s\n' % (lineNum, embedding))
 
     return embeddingKey
@@ -167,7 +166,7 @@ def verifyEmbeddingMethod(
 # Throws:  nothing
 
 def verifyFixationMethod(
-    fixation, 	# Fixation Method value (string)
+    fixation, 	# Fixation Method value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -177,14 +176,14 @@ def verifyFixationMethod(
     fixationKey = 0
 
     if len(fixationDict) == 0:
-	results = db.sql('select _Fixation_key, fixation from GXD_FixationMethod', 'auto')
-	for r in results:
-	    fixationDict[r['fixation']] = r['_Fixation_key']
+        results = db.sql('select _Fixation_key, fixation from GXD_FixationMethod', 'auto')
+        for r in results:
+            fixationDict[r['fixation']] = r['_Fixation_key']
 
-    if fixationDict.has_key(fixation):
+    if fixation in fixationDict:
         fixationKey = fixationDict[fixation]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Fixation (%d): %s\n' % (lineNum, fixation))
 
     return fixationKey
@@ -197,7 +196,7 @@ def verifyFixationMethod(
 # Throws:  nothing
 
 def verifyGelRNAType(
-    gelRNAType, 	# Gel RNA Type value (string)
+    gelRNAType, 	# Gel RNA Type value (str.
     lineNum,	# line number (integer)
     errorFile	# error file (file descriptor)
     ):
@@ -207,14 +206,14 @@ def verifyGelRNAType(
     gelRNATypeKey = 0
 
     if len(gelRNATypeDict) == 0:
-	results = db.sql('select _GelRNAType_key, rnaType from GXD_GelRNAType', 'auto')
-	for r in results:
-	    gelRNATypeDict[r['rnaType']] = r['_GelRNAType_key']
+        results = db.sql('select _GelRNAType_key, rnaType from GXD_GelRNAType', 'auto')
+        for r in results:
+            gelRNATypeDict[r['rnaType']] = r['_GelRNAType_key']
 
-    if gelRNATypeDict.has_key(gelRNAType):
+    if gelRNAType in gelRNATypeDict:
         gelRNATypeKey = gelRNATypeDict[gelRNAType]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Gel RNA Type (%d): %s\n' % (lineNum, gelRNAType))
 
     return gelRNATypeKey
@@ -227,7 +226,7 @@ def verifyGelRNAType(
 # Throws:  nothing
 
 def verifyGelControl(
-    gelControl, 	# Gel Control value (string)
+    gelControl, 	# Gel Control value (str.
     lineNum,	# line number (integer)
     errorFile	# error file (file descriptor)
     ):
@@ -237,14 +236,14 @@ def verifyGelControl(
     gelControlKey = 0
 
     if len(gelControlDict) == 0:
-	results = db.sql('select _GelControl_key, gelLaneContent from GXD_GelControl', 'auto')
-	for r in results:
-	    gelControlDict[r['gelLaneContent']] = r['_GelControl_key']
+        results = db.sql('select _GelControl_key, gelLaneContent from GXD_GelControl', 'auto')
+        for r in results:
+            gelControlDict[r['gelLaneContent']] = r['_GelControl_key']
 
-    if gelControlDict.has_key(gelControl):
+    if gelControl in gelControlDict:
         gelControlKey = gelControlDict[gelControl]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Gel Control (%d): %s\n' % (lineNum, gelControl))
 
     return gelControlKey
@@ -257,7 +256,7 @@ def verifyGelControl(
 # Throws:  nothing
 
 def verifyGelUnits(
-    gelUnits, 	# Gel Units value (string)
+    gelUnits, 	# Gel Units value (str.
     lineNum,	# line number (integer)
     errorFile	# error file (file descriptor)
     ):
@@ -267,14 +266,14 @@ def verifyGelUnits(
     gelUnitsKey = 0
 
     if len(gelUnitsDict) == 0:
-	results = db.sql('select _GelUnits_key, units from GXD_GelUnits', 'auto')
-	for r in results:
-	    gelUnitsDict[r['units']] = r['_GelUnits_key']
+        results = db.sql('select _GelUnits_key, units from GXD_GelUnits', 'auto')
+        for r in results:
+            gelUnitsDict[r['units']] = r['_GelUnits_key']
 
-    if gelUnitsDict.has_key(gelUnits):
+    if gelUnits in gelUnitsDict:
         gelUnitsKey = gelUnitsDict[gelUnits]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Gel Units (%d): %s\n' % (lineNum, gelUnits))
 
     return gelUnitsKey
@@ -287,7 +286,7 @@ def verifyGelUnits(
 # Throws:  nothing
 
 def verifyGelStrength(
-    gelStrength, 	# Gel Strength value (string)
+    gelStrength, 	# Gel Strength value (str.
     lineNum,	# line number (integer)
     errorFile	# error file (file descriptor)
     ):
@@ -297,14 +296,14 @@ def verifyGelStrength(
     gelStrengthKey = 0
 
     if len(gelStrengthDict) == 0:
-	results = db.sql('select _Strength_key, strength from GXD_Strength', 'auto')
-	for r in results:
-	    gelStrengthDict[r['strength']] = r['_Strength_key']
+        results = db.sql('select _Strength_key, strength from GXD_Strength', 'auto')
+        for r in results:
+            gelStrengthDict[r['strength']] = r['_Strength_key']
 
-    if gelStrengthDict.has_key(gelStrength):
+    if gelStrength in gelStrengthDict:
         gelStrengthKey = gelStrengthDict[gelStrength]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Gel Strength (%d): %s\n' % (lineNum, gelStrength))
 
     return gelStrengthKey
@@ -320,19 +319,19 @@ def verifyGelStrength(
 # Throws:
 
 def verifyGenotype(
-    genotypeID,          # genotype accession ID; MGI:#### (string)
+    genotypeID,          # genotype accession ID; MGI:#### (str.
     lineNum,		 # line number (integer)
     errorFile	   # error file (file descriptor)
     ):
 
     global genotypeDict
 
-    if genotypeDict.has_key(genotypeID):
+    if genotypeID in genotypeDict:
         genotypeKey = genotypeDict[genotypeID]
     else:
         genotypeKey = accessionlib.get_Object_key(genotypeID, 'Genotype')
         if genotypeKey is None:
-	    if errorFile != None:
+            if errorFile != None:
                 errorFile.write('Invalid Genotype (%d): %s\n' % (lineNum, genotypeID))
             genotypeKey = 0
         else:
@@ -348,7 +347,7 @@ def verifyGenotype(
 # Throws:  nothing
 
 def verifyHybridization(
-    hybridization, # value (string)
+    hybridization, # value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -356,9 +355,9 @@ def verifyHybridization(
     global hybridizationList
 
     if hybridization in hybridizationList:
-	return 1
+        return 1
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Hybridization (%d): %s\n' % (lineNum, hybridization))
         return 0
 
@@ -370,7 +369,7 @@ def verifyHybridization(
 # Throws:  nothing
 
 def verifyIdxAssay(
-    idxassay, 	# Assay value (string)
+    idxassay, 	# Assay value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -380,14 +379,14 @@ def verifyIdxAssay(
     idxassayKey = 0
 
     if len(idxassayDict) == 0:
-	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 12', 'auto')
-	for r in results:
-	    idxassayDict[r['term']] = r['_Term_key']
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 12', 'auto')
+        for r in results:
+            idxassayDict[r['term']] = r['_Term_key']
 
-    if idxassayDict.has_key(idxassay):
+    if idxassay in idxassayDict:
         idxassayKey = idxassayDict[idxassay]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Index Assay (%d): %s\n' % (lineNum, idxassay))
 
     return idxassayKey
@@ -400,7 +399,7 @@ def verifyIdxAssay(
 # Throws:  nothing
 
 def verifyIdxPriority(
-    idxpriority, 	# Priority value (string)
+    idxpriority, 	# Priority value (str.
     lineNum,		# line number (integer)
     errorFile	   	# error file (file descriptor)
     ):
@@ -410,14 +409,14 @@ def verifyIdxPriority(
     idxpriorityKey = 0
 
     if len(idxpriorityDict) == 0:
-	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 11', 'auto')
-	for r in results:
-	    idxpriorityDict[r['term']] = r['_Term_key']
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 11', 'auto')
+        for r in results:
+            idxpriorityDict[r['term']] = r['_Term_key']
 
-    if idxpriorityDict.has_key(idxpriority):
+    if idxpriority in idxpriorityDict:
         idxpriorityKey = idxpriorityDict[idxpriority]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Index Priority (%d): %s\n' % (lineNum, idxpriority))
 
     return idxpriorityKey
@@ -430,7 +429,7 @@ def verifyIdxPriority(
 # Throws:  nothing
 
 def verifyIdxStage(
-    idxstage, 	# Stage value (string)
+    idxstage, 	# Stage value (str.
     lineNum,		# line number (integer)
     errorFile	   	# error file (file descriptor)
     ):
@@ -440,14 +439,14 @@ def verifyIdxStage(
     idxstageKey = 0
 
     if len(idxstageDict) == 0:
-	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 13', 'auto')
-	for r in results:
-	    idxstageDict[r['term']] = r['_Term_key']
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 13', 'auto')
+        for r in results:
+            idxstageDict[r['term']] = r['_Term_key']
 
-    if idxstageDict.has_key(idxstage):
+    if idxstage in idxstageDict:
         idxstageKey = idxstageDict[idxstage]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Index Stage (%d): %s\n' % (lineNum, idxstage))
 
     return idxstageKey
@@ -460,7 +459,7 @@ def verifyIdxStage(
 # Throws:  nothing
 
 def verifyPrepLabel(
-    label, 	# Label value (string)
+    label, 	# Label value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -470,14 +469,14 @@ def verifyPrepLabel(
     labelKey = 0
 
     if len(labelDict) == 0:
-	results = db.sql('select _Label_key, label from GXD_Label', 'auto')
-	for r in results:
-	    labelDict[r['label']] = r['_Label_key']
+        results = db.sql('select _Label_key, label from GXD_Label', 'auto')
+        for r in results:
+            labelDict[r['label']] = r['_Label_key']
 
-    if labelDict.has_key(label):
+    if label in labelDict:
         labelKey = labelDict[label]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Prep Label (%d): %s\n' % (lineNum, label))
 
     return labelKey
@@ -490,7 +489,7 @@ def verifyPrepLabel(
 # Throws:  nothing
 
 def verifyPrepSecondary(
-    secondary, 	# Secondary value (string)
+    secondary, 	# Secondary value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -500,14 +499,14 @@ def verifyPrepSecondary(
     secondaryKey = 0
 
     if len(secondaryDict) == 0:
-	results = db.sql('select _Secondary_key, secondary from GXD_Secondary', 'auto')
-	for r in results:
-	    secondaryDict[r['secondary']] = r['_Secondary_key']
+        results = db.sql('select _Secondary_key, secondary from GXD_Secondary', 'auto')
+        for r in results:
+            secondaryDict[r['secondary']] = r['_Secondary_key']
 
-    if secondaryDict.has_key(secondary):
+    if secondary in secondaryDict:
         secondaryKey = secondaryDict[secondary]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Prep Secondary (%d): %s\n' % (lineNum, secondary))
 
     return secondaryKey
@@ -520,7 +519,7 @@ def verifyPrepSecondary(
 # Throws:  nothing
 
 def verifyPrepSense(
-    sense, 	# Sense value (string)
+    sense, 	# Sense value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -530,14 +529,14 @@ def verifyPrepSense(
     senseKey = 0
 
     if len(senseDict) == 0:
-	results = db.sql('select _Sense_key, sense from GXD_ProbeSense', 'auto')
-	for r in results:
-	    senseDict[r['sense']] = r['_Sense_key']
+        results = db.sql('select _Sense_key, sense from GXD_ProbeSense', 'auto')
+        for r in results:
+            senseDict[r['sense']] = r['_Sense_key']
 
-    if senseDict.has_key(sense):
+    if sense in senseDict:
         senseKey = senseDict[sense]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Prep Sense (%d): %s\n' % (lineNum, sense))
 
     return senseKey
@@ -550,7 +549,7 @@ def verifyPrepSense(
 # Throws:  nothing
 
 def verifyPrepType(
-    prepType, 	# Type value (string)
+    prepType, 	# Type value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -558,9 +557,9 @@ def verifyPrepType(
     global prepTypeList
 
     if prepType in prepTypeList:
-	return 1
+        return 1
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Prep Type (%d): %s\n' % (lineNum, prepType))
         return 0
 
@@ -572,7 +571,7 @@ def verifyPrepType(
 # Throws:  nothing
 
 def verifyPrepVisualization(
-    visualization, 	# Visualization value (string)
+    visualization, 	# Visualization value (str.
     lineNum,		# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -582,14 +581,14 @@ def verifyPrepVisualization(
     visualKey = 0
 
     if len(visualDict) == 0:
-	results = db.sql('select _Visualization_key, visualization from GXD_VisualizationMethod', 'auto')
-	for r in results:
-	    visualDict[r['visualization']] = r['_Visualization_key']
+        results = db.sql('select _Visualization_key, visualization from GXD_VisualizationMethod', 'auto')
+        for r in results:
+            visualDict[r['visualization']] = r['_Visualization_key']
 
-    if visualDict.has_key(visualization):
+    if visualization in visualDict:
         visualKey = visualDict[visualization]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Prep Visualization (%d): %s\n' % (lineNum, visualization))
 
     return visualKey
@@ -602,7 +601,7 @@ def verifyPrepVisualization(
 # Throws:  nothing
 
 def verifyStrength(
-    strength, 	# Strength value (string)
+    strength, 	# Strength value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -612,14 +611,14 @@ def verifyStrength(
     strengthKey = 0
 
     if len(strengthDict) == 0:
-	results = db.sql('select _Strength_key, strength from GXD_Strength', 'auto')
-	for r in results:
-	    strengthDict[r['strength']] = r['_Strength_key']
+        results = db.sql('select _Strength_key, strength from GXD_Strength', 'auto')
+        for r in results:
+            strengthDict[r['strength']] = r['_Strength_key']
 
-    if strengthDict.has_key(strength):
+    if strength in strengthDict:
         strengthKey = strengthDict[strength]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Strength (%d): %s\n' % (lineNum, strength))
 
     return strengthKey
@@ -632,7 +631,7 @@ def verifyStrength(
 # Throws:  nothing
 
 def verifyPattern(
-    pattern, 	# Pattern value (string)
+    pattern, 	# Pattern value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -642,14 +641,14 @@ def verifyPattern(
     patternKey = 0
 
     if len(patternDict) == 0:
-	results = db.sql('select _Pattern_key, pattern from GXD_Pattern', 'auto')
-	for r in results:
-	    patternDict[r['pattern']] = r['_Pattern_key']
+        results = db.sql('select _Pattern_key, pattern from GXD_Pattern', 'auto')
+        for r in results:
+            patternDict[r['pattern']] = r['_Pattern_key']
 
-    if patternDict.has_key(pattern):
+    if pattern in patternDict:
         patternKey = patternDict[pattern]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Pattern (%d): %s\n' % (lineNum, pattern))
 
     return patternKey
@@ -662,7 +661,7 @@ def verifyPattern(
 # Throws:  nothing
 
 def verifyReporterGene(
-    reporterGene, # Reporter Gene value (string)
+    reporterGene, # Reporter Gene value (str.
     lineNum,	# line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -672,15 +671,14 @@ def verifyReporterGene(
     reporterGeneKey = 0
 
     if len(reporterGeneDict) == 0:
-	results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 14', 'auto')
-	for r in results:
-	    reporterGeneDict[r['term']] = r['_Term_key']
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 14', 'auto')
+        for r in results:
+            reporterGeneDict[r['term']] = r['_Term_key']
 
-    if reporterGeneDict.has_key(reporterGene):
+    if reporterGene in reporterGeneDict:
         reporterGeneKey = reporterGeneDict[reporterGene]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Reporter Gene (%d): %s\n' % (lineNum, reporterGene))
 
     return reporterGeneKey
-

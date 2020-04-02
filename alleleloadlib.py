@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 
 #
 # Program: alleleloadlib.py
@@ -48,28 +47,28 @@ mutantCellLineByAlleleDict = {}		# mutant cell line by allele
 # Throws:  nothing
 
 def verifyMutnatCellLine(
-    mutantCellLine,      # mutant name (string)
+    mutantCellLine,      # mutant name (str.
     lineNum,		 # line number (integer)
     errorFile            # error file (file descriptor)
     ):
 
     global mutantCellLineDict
 
-    if mutantCellLineDict.has_key(mutantCellLine):
+    if mutantCellLine in mutantCellLineDict:
         mutantCellLineKey = mutantCellLineDict[mutantCellLine]
     else:
-	results = db.sql('''
-		select _CellLine_key, cellLine 
-		from ALL_CellLine
-		where cellLine = '%s'
-		and isMutant = 1
-		''' % (mutantCellLine), 'auto')
+        results = db.sql('''
+                select _CellLine_key, cellLine 
+                from ALL_CellLine
+                where cellLine = '%s'
+                and isMutant = 1
+                ''' % (mutantCellLine), 'auto')
         if len(results) == 0:
-	    if errorFile != None:
+            if errorFile != None:
                 errorFile.write('Invalid Mutant CellLine (%d): %s\n' % (lineNum, mutantCellLine))
             mutantCellLineKey = 0
         else:
-	    for r in results:
+            for r in results:
                 mutantCellLineKey = r['_CellLine_key']
                 mutantCellLineDict[mutantCellLine] = mutantCellLineKey
 
@@ -84,33 +83,32 @@ def verifyMutnatCellLine(
 # Throws:  nothing
 
 def verifyMutnatCellLineByAllele(
-    mutantCellLine,      # mutant name (string)
-    alleleKey,      	 # allele key (string)
+    mutantCellLine,      # mutant name (str.
+    alleleKey,      	 # allele key (str.
     lineNum,		 # line number (integer)
     errorFile            # error file (file descriptor)
     ):
 
     global mutantCellLineByAlleleDict
 
-    if mutantCellLineByAlleleDict.has_key(mutantCellLine):
+    if mutantCellLine in mutantCellLineByAlleleDict:
         mutantCellLineKey = mutantCellLineByAlleleDict[mutantCellLine]
     else:
-	results = db.sql('''
-		select c._CellLine_key, c.cellLine 
-		from ALL_CellLine c, ALL_Allele_CellLine a
-		where c.cellLine = '%s'
-		and c.isMutant = 1
-		and c._CellLine_key = a._MutantCellLine_key
-		and a._Allele_key = %s
-		''' % (mutantCellLine, alleleKey), 'auto')
+        results = db.sql('''
+                select c._CellLine_key, c.cellLine 
+                from ALL_CellLine c, ALL_Allele_CellLine a
+                where c.cellLine = '%s'
+                and c.isMutant = 1
+                and c._CellLine_key = a._MutantCellLine_key
+                and a._Allele_key = %s
+                ''' % (mutantCellLine, alleleKey), 'auto')
         if len(results) == 0:
-	    if errorFile != None:
+            if errorFile != None:
                 errorFile.write('Invalid Mutant CellLine (%d): %s\n' % (lineNum, mutantCellLine))
             mutantCellLineKey = 0
         else:
-	    for r in results:
+            for r in results:
                 mutantCellLineKey = r['_CellLine_key']
                 mutantCellLineByAlleleDict[mutantCellLine] = mutantCellLineKey
 
     return mutantCellLineKey
-

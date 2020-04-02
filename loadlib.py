@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 
 #
 # Program: loadlib.py
@@ -56,7 +55,7 @@ loaddate = mgi_utils.date('%m/%d/%Y %H:%M:%S')	# current date
 # Throws: nothing
 
 def verifyLogicalDB(
-    logicalDB,   # the Logical DB value from the input file (string)
+    logicalDB,   # the Logical DB value from the input file (str.
     lineNum,     # the line number (from the input file) on which this value was found (integer)
     errorFile    # error file
     ):
@@ -68,10 +67,10 @@ def verifyLogicalDB(
         for r in results:
             logicalDBDict[r['name']] = r['_LogicalDB_key']
 
-    if logicalDBDict.has_key(logicalDB):
+    if logicalDB in logicalDBDict:
         logicalDBKey = logicalDBDict[logicalDB]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Logical DB (row %d): %s\n' % (lineNum, logicalDB))
         logicalDBKey = 0
 
@@ -86,7 +85,7 @@ def verifyLogicalDB(
 # Throws:  nothing
 
 def verifyMarker(
-    markerID, 	# Accession ID of the Marker (string)
+    markerID, 	# Accession ID of the Marker (str.
     lineNum,	# line number (integer)
     errorFile,  # error file descriptor
     checkDuplicate = 0,	# check if Marker is a duplicate
@@ -97,29 +96,29 @@ def verifyMarker(
 
     markerKey = 0
 
-    if markerDict.has_key(markerID):
-	if checkDuplicate:
-	    if errorFile != None:
-		errorFile.write('Duplicate Mouse Marker (row %d) %s\n' % (lineNum, markerID))
+    if markerID in markerDict:
+        if checkDuplicate:
+            if errorFile != None:
+                errorFile.write('Duplicate Mouse Marker (row %d) %s\n' % (lineNum, markerID))
         else:
-	    markerKey = markerDict[markerID]
+            markerKey = markerDict[markerID]
     else:
         results = db.sql('select a._Object_key ' + \
-	    'from MRK_Acc_View a, MRK_Marker m, MGI_Organism o ' + \
-	    'where a.accID = \'%s\' ' % (markerID) + \
-	    'and a._LogicalDB_key = 1 ' + \
-	    'and a._Object_key = m._Marker_key ' + \
-	    'and m._Organism_key = o._Organism_key ' + \
-	    'and o.commonName = \'%s\' ' % (organism), 'auto')
+            'from MRK_Acc_View a, MRK_Marker m, MGI_Organism o ' + \
+            'where a.accID = \'%s\' ' % (markerID) + \
+            'and a._LogicalDB_key = 1 ' + \
+            'and a._Object_key = m._Marker_key ' + \
+            'and m._Organism_key = o._Organism_key ' + \
+            'and o.commonName = \'%s\' ' % (organism), 'auto')
 
         for r in results:
             if r['_Object_key'] is None:
-		if errorFile != None:
+                if errorFile != None:
                     errorFile.write('Invalid Marker (row %d) %s\n' % (lineNum, markerID))
                 markerKey = 0
             else:
                 markerKey = r['_Object_key']
-		markerDict[markerID] = markerKey
+                markerDict[markerID] = markerKey
 
     return markerKey
 
@@ -131,7 +130,7 @@ def verifyMarker(
 # Throws: nothing
 
 def verifyMGIType(
-    mgiType,	 # the MGI Type value from the input file (string)
+    mgiType,	 # the MGI Type value from the input file (str.
     lineNum,     # the line number (from the input file) on which this value was found (integer)
     errorFile    # error file
     ):
@@ -143,10 +142,10 @@ def verifyMGIType(
         for r in results:
             mgiTypeDict[r['name']] = r['_MGIType_key']
 
-    if mgiTypeDict.has_key(mgiType):
+    if mgiType in mgiTypeDict:
         mgiTypeKey = mgiTypeDict[mgiType]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid MGI Type (row %d): %s\n' % (lineNum, mgiType))
         mgiTypeKey = 0
 
@@ -162,9 +161,9 @@ def verifyMGIType(
 # Throws:  nothing
 
 def verifyObject(
-    objectID, 		# Accession ID of the Object (string)
-    mgiTypeKey, 	# Object Type (string)
-    objectDescription,	# Object description (string)
+    objectID, 		# Accession ID of the Object (str.
+    mgiTypeKey, 	# Object Type (str.
+    objectDescription,	# Object description (str.
     lineNum,		# line number (integer)
     errorFile   	# error file descriptor
     ):
@@ -173,7 +172,7 @@ def verifyObject(
 
     objectKey = None
 
-    if len(objectID) > 0 and objectDict.has_key(objectID):
+    if len(objectID) > 0 and objectID in objectDict:
         return objectDict[objectID] 
 
     elif len(objectID) > 0:
@@ -186,11 +185,11 @@ def verifyObject(
     else:
         results = db.sql('select dbView from ACC_MGIType where _MGIType_key = %s' % (mgiTypeKey), 'auto')
 
-	if len(results) > 0:
+        if len(results) > 0:
             dbView = results[0]['dbView']
 
             results = db.sql('select _Object_key from %s ' % (dbView) + \
-	        ' where description = \'%s\' ' % (objectDescription), 'auto')
+                ' where description = \'%s\' ' % (objectDescription), 'auto')
 
             for r in results:
                 objectKey = r['_Object_key']
@@ -198,7 +197,7 @@ def verifyObject(
     objectDict[objectID] = objectKey
 
     if objectKey is None:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Object (row %d) %s\n' % (lineNum, objectID))
         objectKey = 0
 
@@ -213,7 +212,7 @@ def verifyObject(
 # Throws:  nothing
 
 def verifyProbe(
-    probeID, 	# Accession ID of the Probe (string)
+    probeID, 	# Accession ID of the Probe (str.
     lineNum,	# line number (integer)
     errorFile   # error file (file descriptor)
     ):
@@ -222,14 +221,14 @@ def verifyProbe(
 
     probeKey = 0
 
-    if probeDict.has_key(probeID):
+    if probeID in probeDict:
         return probeDict[probeID]
     else:
         results = db.sql('select _Object_key from PRB_Acc_View where accID = \'%s\' ' % (probeID), 'auto')
 
         for r in results:
             if r['_Object_key'] is None:
-		if errorFile != None:
+                if errorFile != None:
                     errorFile.write('Invalid Mouse Probe (row %d) %s\n' % (lineNum, probeID))
                 probeKey = 0
             else:
@@ -247,22 +246,22 @@ def verifyProbe(
 # Throws:  nothing
 
 def verifyReference(
-    referenceID,        # reference accession ID (string)
+    referenceID,        # reference accession ID (str.
     lineNum,		# line number (integer)
     errorFile   	# error file descriptor
     ):
 
     global referenceDict
 
-    if referenceDict.has_key(referenceID):
+    if referenceID in referenceDict:
         referenceKey = referenceDict[referenceID]
     else:
         referenceKey = accessionlib.get_Object_key(referenceID, 'Reference')
 
-	referenceDict[referenceID] = referenceKey
+        referenceDict[referenceID] = referenceKey
 
         if referenceKey is None:
-	    if errorFile != None:
+            if errorFile != None:
                 errorFile.write('Invalid Reference (row %d): %s\n' % (lineNum, referenceID))
             referenceKey = 0
 
@@ -278,9 +277,9 @@ def verifyReference(
 # Throws:  nothing
 
 def verifyTerm(
-    termID, 		# Accession ID of the Term (string)
-    vocabKey,		# Vocabulary key (string)
-    termDescription,	# Term description (string)
+    termID, 		# Accession ID of the Term (str.
+    vocabKey,		# Vocabulary key (str.
+    termDescription,	# Term description (str.
     lineNum,		# line number (integer)
     errorFile   	# error file descriptor
     ):
@@ -289,12 +288,12 @@ def verifyTerm(
 
     termKey = None
 
-    if len(termID) > 0 and termDict.has_key(termID):
+    if len(termID) > 0 and termID in termDict:
         return termDict[termID] 
 
     elif len(termDescription) > 0 and vocabKey \
-	and termDict.has_key((vocabKey, termDescription)):
-	return termDict[(vocabKey, termDescription)]
+        and (vocabKey, termDescription) in termDict:
+        return termDict[(vocabKey, termDescription)]
 
     elif len(termID) > 0:
         results = db.sql('select a._Object_key from VOC_Term_Acc_View a ' + \
@@ -303,21 +302,21 @@ def verifyTerm(
         for r in results:
             termKey = r['_Object_key']
 
-	termDict[termID] = termKey
+        termDict[termID] = termKey
     else:
-	# optional search by VOC_Term.term as termDescription
+        # optional search by VOC_Term.term as termDescription
         results = db.sql('select _Term_key from VOC_Term ' + \
-		'where term = \'%s\' ' % (termDescription) + \
-		'and _Vocab_key = %s' % (vocabKey), 'auto')
+                'where term = \'%s\' ' % (termDescription) + \
+                'and _Vocab_key = %s' % (vocabKey), 'auto')
 
         for r in results:
             termKey = r['_Term_key']
 
-	termDict[(vocabKey, termDescription)] = termKey
+        termDict[(vocabKey, termDescription)] = termKey
 
 
     if termKey is None:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Term (row:[%d]: termID:[%s] term [%s]\n' % (lineNum, termID, termDescription))
         termKey = 0
 
@@ -333,7 +332,7 @@ def verifyTerm(
 # Throws:  nothing
 
 def verifyUser(
-    userID, 	# User ID (string)
+    userID, 	# User ID (str.
     lineNum,	# line number (integer)
     errorFile   # error file descriptor
     ):
@@ -342,7 +341,7 @@ def verifyUser(
 
     userKey = None
 
-    if userDict.has_key(userID):
+    if userID in userDict:
         userKey = userDict[userID]
 
     else:
@@ -353,7 +352,7 @@ def verifyUser(
     userDict[userID] = userKey
 
     if userKey is None:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid User (row %d): %s\n' % (lineNum, userID))
         userKey = 0
 
@@ -367,7 +366,7 @@ def verifyUser(
 # Throws:  nothing
 
 def verifyMarkerType(
-    markerType, 	  # Marker Type value (string)
+    markerType, 	  # Marker Type value (str.
     lineNum,	  # line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -378,14 +377,13 @@ def verifyMarkerType(
 
     if len(markerTypeDict) == 0:
         results = db.sql('select _Marker_Type_key, name from MRK_Types', 'auto')
-	for r in results:
-	    markerTypeDict[r['name']] = r['_Marker_Type_key']
+        for r in results:
+            markerTypeDict[r['name']] = r['_Marker_Type_key']
 
-    if markerTypeDict.has_key(markerType):
+    if markerType in markerTypeDict:
         markerTypeKey = markerTypeDict[markerType]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Marker Type (row %d): %s\n' % (lineNum, markerType))
 
     return markerTypeKey
-

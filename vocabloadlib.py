@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 
 #
 # Program: vocabloadlib.py
@@ -46,8 +45,8 @@ qualifierDict = {}     # qualifiers
 # Throws:  nothing
 
 def verifyEvidence(
-    ecode, 	  # Evidence Code value (string)
-    annotTypeKey, # Annotation Type key, (string)
+    ecode, 	  # Evidence Code value (str.
+    annotTypeKey, # Annotation Type key, (str.
     lineNum,	  # line number (integer)
     errorFile	   # error file (file descriptor)
     ):
@@ -62,13 +61,13 @@ def verifyEvidence(
                         'where e._Vocab_key = t._EvidenceVocab_key ' + \
                         'and t._AnnotType_key = %s\n' % (annotTypeKey), 'auto')
 
-	for r in results:
-	    ecodeDict[r['abbreviation']] = r['_Term_key']
+        for r in results:
+            ecodeDict[r['abbreviation']] = r['_Term_key']
 
-    if ecodeDict.has_key(ecode):
+    if ecode in ecodeDict:
         ecodeKey = ecodeDict[ecode]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Evidence Code (%d): %s\n' % (lineNum, ecode))
 
     return ecodeKey
@@ -81,8 +80,8 @@ def verifyEvidence(
 # Throws:  nothing
 
 def verifyQualifier(
-    qualifier, 	  # Qualifier value (string)
-    annotTypeKey, # Annotation Type key, (string)
+    qualifier, 	  # Qualifier value (str.
+    annotTypeKey, # Annotation Type key, (str.
     byAbbrev, 	  # Compare by Abbreviation (1) or by Term (0)
     lineNum,	  # line number (integer)
     errorFile	  # error file (file descriptor)
@@ -94,32 +93,31 @@ def verifyQualifier(
 
     if len(qualifierDict) == 0:
 
-	if byAbbrev:
+        if byAbbrev:
             results = db.sql('select e._Term_key, e.abbreviation ' + \
                         'from VOC_Term e, VOC_AnnotType t ' + \
                         'where e._Vocab_key = t._QualifierVocab_key ' + \
                         'and t._AnnotType_key = %s\n' % (annotTypeKey), 'auto')
 
-	    for r in results:
-	        qualifierDict[r['abbreviation']] = r['_Term_key']
+            for r in results:
+                qualifierDict[r['abbreviation']] = r['_Term_key']
 
-	else:
+        else:
             results = db.sql('select e._Term_key, e.term ' + \
                         'from VOC_Term e, VOC_AnnotType t ' + \
                         'where e._Vocab_key = t._QualifierVocab_key ' + \
                         'and t._AnnotType_key = %s\n' % (annotTypeKey), 'auto')
 
-	    for r in results:
-	        qualifierDict[r['term']] = r['_Term_key']
+            for r in results:
+                qualifierDict[r['term']] = r['_Term_key']
 
     if len(qualifier) == 0:
-	qualifier = None
+        qualifier = None
 
-    if qualifierDict.has_key(qualifier):
+    if qualifier in qualifierDict:
         qualifierKey = qualifierDict[qualifier]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Qualifier (%d): %s\n' % (lineNum, qualifier))
 
     return qualifierKey
-

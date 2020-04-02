@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 
 #
 # Program: sourceloadlib.py
@@ -56,7 +55,7 @@ genderList = ['Female', 'Male', 'Pooled', 'Not Specified']      # list of valid 
 # Throws: nothing
 
 def verifyAge(
-    age,         # the Age value from the input file (string)
+    age,         # the Age value from the input file (str.
     lineNum,     # the line number (from the input file) on which this value was found (integer)
     errorFile	 # error file (file descriptor)
     ):
@@ -64,7 +63,7 @@ def verifyAge(
     ageMin, ageMax = agelib.ageMinMax(age)
 
     if ageMin is None:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Age (line: %d) %s\n' % (lineNum, age))
 
     return ageMin, ageMax 
@@ -78,7 +77,7 @@ def verifyAge(
 # Throws: nothing
 
 def verifyCellLine(
-    cellLine,	# the Cell Line value from the input file (string)
+    cellLine,	# the Cell Line value from the input file (str.
     lineNum,	# the line number (from the input file) on which this value was found
     errorFile	# error file (file descriptor)
     ):
@@ -90,10 +89,10 @@ def verifyCellLine(
         for r in results:
             cellLineDict[r['term']] = r['_Term_key']
 
-    if cellLineDict.has_key(cellLine):
+    if cellLine in cellLineDict:
         return cellLineDict[cellLine]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Cell Line (line: %d) %s\n' % (lineNum, cellLine))
         return 0
 
@@ -105,7 +104,7 @@ def verifyCellLine(
 # Throws: nothing
 
 def verifyLibrary(
-    libraryName, # the Library Name value from the input file (string)
+    libraryName, # the Library Name value from the input file (str.
     lineNum,     # the line number (from the input file) on which this value was found (integer)
     errorFile = None	# error file (file descriptor)
     ):
@@ -118,10 +117,10 @@ def verifyLibrary(
         for r in results:
             libraryDict[r['name']] = r['_Source_key']
 
-    if libraryDict.has_key(libraryName):
+    if libraryName in libraryDict:
         return libraryDict[libraryName] 
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Library (line: %d) %s\n' % (lineNum, libraryName))
         return 0
 
@@ -133,8 +132,8 @@ def verifyLibrary(
 # Throws: nothing
 
 def verifyLibraryID(
-    libraryID,   # the Library ID value from the input file (string)
-    logicalDBKey,# the Logical DB key value of the Library from the input file (string)
+    libraryID,   # the Library ID value from the input file (str.
+    logicalDBKey,# the Logical DB key value of the Library from the input file (str.
     lineNum,     # the line number (from the input file) on which this value was found (integer)
     errorFile = None	# error file (file descriptor)
     ):
@@ -145,15 +144,15 @@ def verifyLibraryID(
     if len(libraryIDDict) == 0:
         results = db.sql('select _LogicalDB_key, _Object_key, accID from PRB_Source_Acc_View', 'auto')
         for r in results:
-	    key = str(r['_LogicalDB_key']) + ':' + r['accID']
-	    value = r['_Object_key']
+            key = str(r['_LogicalDB_key']) + ':' + r['accID']
+            value = r['_Object_key']
             libraryIDDict[key] = value
 
     key = str(logicalDBKey) + ':' + libraryID
-    if libraryIDDict.has_key(key):
+    if key in libraryIDDict:
         return libraryIDDict[key] 
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Library ID (line: %d) %s\n' % (lineNum, libraryID))
         return 0
 
@@ -166,7 +165,7 @@ def verifyLibraryID(
 # Throws: nothing
 
 def verifyGender(
-    gender,	# the Gender value from the input file (string)
+    gender,	# the Gender value from the input file (str.
     lineNum,	# the line number (from the input file) on which this value was found
     errorFile	# error file (file descriptor)
     ):
@@ -178,10 +177,10 @@ def verifyGender(
         for r in results:
             genderDict[r['term']] = r['_Term_key']
 
-    if genderDict.has_key(gender):
+    if gender in genderDict:
         return genderDict[gender]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Gender (line: %d) %s\n' % (lineNum, gender))
         return 0
 
@@ -194,22 +193,22 @@ def verifyGender(
 # Throws: nothing
 
 def verifyOrganism(
-    organism,		# the Organism value from the input file (string)
+    organism,		# the Organism value from the input file (str.
     lineNum,		# the line number (from the input file) on which this value was found
     errorFile	 # error file (file descriptor)
     ):
 
     global organismDict
 
-    if organismDict.has_key(organism):
+    if organism in organismDict:
         return organismDict[organism] 
     else:
         results = db.sql('select _Organism_key from MGI_Organism where commonName = \'%s\'' % (organism), 'auto')
 
-	if len(results) == 0:
-	    if errorFile != None:
+        if len(results) == 0:
+            if errorFile != None:
                 errorFile.write('Invalid Organism (line: %d) %s\n' % (lineNum, organism))
-	    return 0
+            return 0
 
         for r in results:
             organismDict[organism] = r['_Organism_key']
@@ -240,26 +239,26 @@ def verifySource(
 
     source = "%s,%s,%s,%s,%s,%s,%s,%s" % (segmentTypeKey, vectorKey, organismKey, strainKey, tissueKey, genderKey, cellLineKey, age)
 
-    if sourceDict.has_key(source):
+    if source in sourceDict:
         return sourceDict[source] 
     else:
         sourceQuery = 'select _Source_key from PRB_Source where ' + \
-		'_SegmentType_key = %s ' % (segmentTypeKey) + \
-		'and _Vector_key = %s ' % (vectorKey) + \
-		'and _Organism_key = %s ' % (organismKey) + \
-		'and _Strain_key = %s ' % (strainKey) + \
-		'and _Tissue_key = %s ' % (tissueKey) + \
-		'and _Gender_key = %s ' % (genderKey) + \
-		'and _CellLine_key = %s ' % (cellLineKey) + \
-		'and age = \'%s\' ' % (age) + \
-		'and isCuratorEdited = 0 '
+                '_SegmentType_key = %s ' % (segmentTypeKey) + \
+                'and _Vector_key = %s ' % (vectorKey) + \
+                'and _Organism_key = %s ' % (organismKey) + \
+                'and _Strain_key = %s ' % (strainKey) + \
+                'and _Tissue_key = %s ' % (tissueKey) + \
+                'and _Gender_key = %s ' % (genderKey) + \
+                'and _CellLine_key = %s ' % (cellLineKey) + \
+                'and age = \'%s\' ' % (age) + \
+                'and isCuratorEdited = 0 '
 
         results = db.sql(sourceQuery, 'auto')
 
-	if len(results) == 0:
-	    if errorFile != None:
+        if len(results) == 0:
+            if errorFile != None:
                 errorFile.write('Invalid Source (line: %d) %s\n%s\n\n' % (lineNum, source, sourceQuery))
-	    return 0
+            return 0
 
         for r in results:
             sourceDict[source] = r['_Source_key']
@@ -274,24 +273,24 @@ def verifySource(
 # Throws: nothing
 
 def verifyStrain(
-    strain,		# the Strain value from the input file (string)
+    strain,		# the Strain value from the input file (str.
     lineNum,		# the line number (from the input file) on which this value was found
     errorFile	 # error file (file descriptor)
     ):
 
     global strainDict
 
-    if strainDict.has_key(strain):
+    if strain in strainDict:
         return strainDict[strain] 
     else:
         results = db.sql('select s._Strain_key ' + \
             'from PRB_Strain s ' + \
             'where s.strain = \'%s\' ' % (strain), 'auto')
 
-	if len(results) == 0:
-	    if errorFile != None:
+        if len(results) == 0:
+            if errorFile != None:
                 errorFile.write('Invalid Strain (line: %d) %s\n' % (lineNum, strain))
-	    return 0
+            return 0
 
         for r in results:
             strainDict[strain] = r['_Strain_key']
@@ -306,28 +305,28 @@ def verifyStrain(
 # Throws: nothing
 
 def verifyStrainID(
-    strain,		# the Strain value from the input file (string)
+    strain,		# the Strain value from the input file (str.
     lineNum,		# the line number (from the input file) on which this value was found
     errorFile	 # error file (file descriptor)
     ):
 
     global strainIDDict
 
-    if strainIDDict.has_key(strain):
+    if strain in strainIDDict:
         return strainIDDict[strain] 
     else:
         results = db.sql('select a.accID ' + \
             'from PRB_Strain s, ACC_Accession a ' + \
             'where s.strain = \'%s\' '% (strain) + \
-	    'and s._Strain_key = a._Object_key ' + \
-	    'and a._MGIType_key = 10 ' + \
-	    'and a._LogicalDB_key = 1 ' + \
-	    'and a.preferred = 1 ', 'auto')
+            'and s._Strain_key = a._Object_key ' + \
+            'and a._MGIType_key = 10 ' + \
+            'and a._LogicalDB_key = 1 ' + \
+            'and a.preferred = 1 ', 'auto')
 
-	if len(results) == 0:
-	    if errorFile != None:
+        if len(results) == 0:
+            if errorFile != None:
                 errorFile.write('Invalid Strain (line: %d) %s\n' % (lineNum, strain))
-	    return 0
+            return 0
 
         for r in results:
             strainIDDict[strain] = r['accID']
@@ -342,7 +341,7 @@ def verifyStrainID(
 # Throws: nothing
 
 def verifyTissue(
-    tissue,		# the Tissue value from the input file (string)
+    tissue,		# the Tissue value from the input file (str.
     lineNum,		# the line number (from the input file) on which this value was found
     errorFile	 # error file (file descriptor)
     ):
@@ -354,10 +353,10 @@ def verifyTissue(
         for r in results:
             tissueDict[r['tissue']] = r['_Tissue_key']
 
-    if tissueDict.has_key(tissue):
+    if tissue in tissueDict:
         return tissueDict[tissue]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid Tissue (line: %d) %s\n' % (lineNum, tissue))
         return 0
 
@@ -370,7 +369,7 @@ def verifyTissue(
 # Throws: nothing
 
 def verifySegmentType(
-    segmentType,	# the SegmentType value from the input file (string)
+    segmentType,	# the SegmentType value from the input file (str.
     lineNum,		# the line number (from the input file) on which this value was found
     errorFile	 # error file (file descriptor)
     ):
@@ -382,10 +381,10 @@ def verifySegmentType(
         for r in results:
             segmentTypeDict[r['term']] = r['_Term_key']
 
-    if segmentTypeDict.has_key(segmentType):
+    if segmentType in segmentTypeDict:
         return segmentTypeDict[segmentType]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid SegmentType (line: %d) %s\n' % (lineNum, segmentType))
         return 0
 
@@ -398,7 +397,7 @@ def verifySegmentType(
 # Throws: nothing
 
 def verifyVectorType(
-    vectorType,		# the VectorType value from the input file (string)
+    vectorType,		# the VectorType value from the input file (str.
     lineNum,		# the line number (from the input file) on which this value was found
     errorFile	 # error file (file descriptor)
     ):
@@ -410,10 +409,9 @@ def verifyVectorType(
         for r in results:
             vectorTypeDict[r['term']] = r['_Term_key']
 
-    if vectorTypeDict.has_key(vectorType):
+    if vectorType in vectorTypeDict:
         return vectorTypeDict[vectorType]
     else:
-	if errorFile != None:
+        if errorFile != None:
             errorFile.write('Invalid VectorType (line: %d) %s\n' % (lineNum, vectorType))
         return 0
-
