@@ -146,9 +146,9 @@ def verifyEmbeddingMethod(
     embeddingKey = 0
 
     if len(embeddingDict) == 0:
-        results = db.sql('select _Embedding_key, embeddingMethod from GXD_EmbeddingMethod', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 155', 'auto')
         for r in results:
-            embeddingDict[r['embeddingMethod']] = r['_Embedding_key']
+            embeddingDict[r['term']] = r['_Term_key']
 
     if embedding in embeddingDict:
         embeddingKey = embeddingDict[embedding]
@@ -176,9 +176,9 @@ def verifyFixationMethod(
     fixationKey = 0
 
     if len(fixationDict) == 0:
-        results = db.sql('select _Fixation_key, fixation from GXD_FixationMethod', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 156', 'auto')
         for r in results:
-            fixationDict[r['fixation']] = r['_Fixation_key']
+            fixationDict[r['term']] = r['_Term_key']
 
     if fixation in fixationDict:
         fixationKey = fixationDict[fixation]
@@ -206,9 +206,9 @@ def verifyGelRNAType(
     gelRNATypeKey = 0
 
     if len(gelRNATypeDict) == 0:
-        results = db.sql('select _GelRNAType_key, rnaType from GXD_GelRNAType', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 172', 'auto')
         for r in results:
-            gelRNATypeDict[r['rnaType']] = r['_GelRNAType_key']
+            gelRNATypeDict[r['term']] = r['_Term_key']
 
     if gelRNAType in gelRNATypeDict:
         gelRNATypeKey = gelRNATypeDict[gelRNAType]
@@ -236,9 +236,9 @@ def verifyGelControl(
     gelControlKey = 0
 
     if len(gelControlDict) == 0:
-        results = db.sql('select _GelControl_key, gelLaneContent from GXD_GelControl', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 154', 'auto')
         for r in results:
-            gelControlDict[r['gelLaneContent']] = r['_GelControl_key']
+            gelControlDict[r['term']] = r['_Term_key']
 
     if gelControl in gelControlDict:
         gelControlKey = gelControlDict[gelControl]
@@ -266,9 +266,9 @@ def verifyGelUnits(
     gelUnitsKey = 0
 
     if len(gelUnitsDict) == 0:
-        results = db.sql('select _GelUnits_key, units from GXD_GelUnits', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 173', 'auto')
         for r in results:
-            gelUnitsDict[r['units']] = r['_GelUnits_key']
+            gelUnitsDict[r['term']] = r['_Term_key']
 
     if gelUnits in gelUnitsDict:
         gelUnitsKey = gelUnitsDict[gelUnits]
@@ -277,36 +277,6 @@ def verifyGelUnits(
             errorFile.write('Invalid Gel Units (%d): %s\n' % (lineNum, gelUnits))
 
     return gelUnitsKey
-
-# Purpose:  verify Gel Strength
-# Returns:  Gel Strength key if valid, else 0
-# Assumes:  nothing
-# Effects:  verifies that the Gel Strength exists in the Gel Strength dictionary
-#	writes to the error file if the Gel Strength is invalid
-# Throws:  nothing
-
-def verifyGelStrength(
-    gelStrength, 	# Gel Strength value (str.
-    lineNum,	# line number (integer)
-    errorFile	# error file (file descriptor)
-    ):
-
-    global gelStrengthDict
-
-    gelStrengthKey = 0
-
-    if len(gelStrengthDict) == 0:
-        results = db.sql('select _Strength_key, strength from GXD_Strength', 'auto')
-        for r in results:
-            gelStrengthDict[r['strength']] = r['_Strength_key']
-
-    if gelStrength in gelStrengthDict:
-        gelStrengthKey = gelStrengthDict[gelStrength]
-    else:
-        if errorFile != None:
-            errorFile.write('Invalid Gel Strength (%d): %s\n' % (lineNum, gelStrength))
-
-    return gelStrengthKey
 
 # Purpose:  verifies the genotype
 # Returns:  the primary key of the genotype or 0 if invalid
@@ -469,9 +439,9 @@ def verifyPrepLabel(
     labelKey = 0
 
     if len(labelDict) == 0:
-        results = db.sql('select _Label_key, label from GXD_Label', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 152', 'auto')
         for r in results:
-            labelDict[r['label']] = r['_Label_key']
+            labelDict[r['term']] = r['_Term_key']
 
     if label in labelDict:
         labelKey = labelDict[label]
@@ -499,9 +469,9 @@ def verifyPrepSecondary(
     secondaryKey = 0
 
     if len(secondaryDict) == 0:
-        results = db.sql('select _Secondary_key, secondary from GXD_Secondary', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 160', 'auto')
         for r in results:
-            secondaryDict[r['secondary']] = r['_Secondary_key']
+            secondaryDict[r['term']] = r['_Term_key']
 
     if secondary in secondaryDict:
         secondaryKey = secondaryDict[secondary]
@@ -529,9 +499,9 @@ def verifyPrepSense(
     senseKey = 0
 
     if len(senseDict) == 0:
-        results = db.sql('select _Sense_key, sense from GXD_ProbeSense', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 159', 'auto')
         for r in results:
-            senseDict[r['sense']] = r['_Sense_key']
+            senseDict[r['term']] = r['_Term_key']
 
     if sense in senseDict:
         senseKey = senseDict[sense]
@@ -581,9 +551,9 @@ def verifyPrepVisualization(
     visualKey = 0
 
     if len(visualDict) == 0:
-        results = db.sql('select _Visualization_key, visualization from GXD_VisualizationMethod', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 157', 'auto')
         for r in results:
-            visualDict[r['visualization']] = r['_Visualization_key']
+            visualDict[r['term']] = r['_Term_key']
 
     if visualization in visualDict:
         visualKey = visualDict[visualization]
@@ -592,6 +562,36 @@ def verifyPrepVisualization(
             errorFile.write('Invalid Prep Visualization (%d): %s\n' % (lineNum, visualization))
 
     return visualKey
+
+# Purpose:  verify Gel Strength
+# Returns:  Gel Strength key if valid, else 0
+# Assumes:  nothing
+# Effects:  verifies that the Gel Strength exists in the Gel Strength dictionary
+#	writes to the error file if the Gel Strength is invalid
+# Throws:  nothing
+
+def verifyGelStrength(
+    gelStrength, 	# Gel Strength value (str.
+    lineNum,	# line number (integer)
+    errorFile	# error file (file descriptor)
+    ):
+
+    global gelStrengthDict
+
+    gelStrengthKey = 0
+
+    if len(gelStrengthDict) == 0:
+        results = db.sql('select _Strength_key, strength from GXD_Strength', 'auto')
+        for r in results:
+            gelStrengthDict[r['strength']] = r['_Strength_key']
+
+    if gelStrength in gelStrengthDict:
+        gelStrengthKey = gelStrengthDict[gelStrength]
+    else:
+        if errorFile != None:
+            errorFile.write('Invalid Gel Strength (%d): %s\n' % (lineNum, gelStrength))
+
+    return gelStrengthKey
 
 # Purpose:  verify Strength
 # Returns:  Strength key if valid, else 0
@@ -641,9 +641,9 @@ def verifyPattern(
     patternKey = 0
 
     if len(patternDict) == 0:
-        results = db.sql('select _Pattern_key, pattern from GXD_Pattern', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key =  153', 'auto')
         for r in results:
-            patternDict[r['pattern']] = r['_Pattern_key']
+            patternDict[r['term']] = r['_Term_key']
 
     if pattern in patternDict:
         patternKey = patternDict[pattern]
