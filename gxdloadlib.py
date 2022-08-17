@@ -581,9 +581,9 @@ def verifyGelStrength(
     gelStrengthKey = 0
 
     if len(gelStrengthDict) == 0:
-        results = db.sql('select _Strength_key, strength from GXD_Strength', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 163', 'auto')
         for r in results:
-            gelStrengthDict[r['strength']] = r['_Strength_key']
+            gelStrengthDict[r['term']] = r['_Term_key']
 
     if gelStrength in gelStrengthDict:
         gelStrengthKey = gelStrengthDict[gelStrength]
@@ -611,9 +611,9 @@ def verifyStrength(
     strengthKey = 0
 
     if len(strengthDict) == 0:
-        results = db.sql('select _Strength_key, strength from GXD_Strength', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 163', 'auto')
         for r in results:
-            strengthDict[r['strength']] = r['_Strength_key']
+            strengthDict[r['term']] = r['_Term_key']
 
     if strength in strengthDict:
         strengthKey = strengthDict[strength]
@@ -641,7 +641,7 @@ def verifyPattern(
     patternKey = 0
 
     if len(patternDict) == 0:
-        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key =  153', 'auto')
+        results = db.sql('select _Term_key, term from VOC_Term where _Vocab_key = 153', 'auto')
         for r in results:
             patternDict[r['term']] = r['_Term_key']
 
