@@ -1,3 +1,17 @@
+TAG: lib_py_dataload-6-0-23-?
+DATE: 12/13/2022
+STAFF: lec
+wts2-1155/GOC taking over GOA mouse, GOA human, etc.
+#       new file:   agelib.py
+#       modified:   alleleloadlib.py
+#       modified:   sourceloadlib.py
+#       deleted:    gxdloadlib.py
+#       deleted:    vocabloadlib.py
+alleleloadlib.py:def verifyMutnatCellLineByAllele : not used
+sourceloadlib.py:def verifyStrainID     : not used
+vocabloadlib.py:def verifyEvidence      : moved to annotload/lib
+vocabloadlib.py:def verifyQualifier     : moved to annotload/lib
+
 TAG: lib_py_dataload-6-0-22-1
 DATE: 08/22/2022
 STAFF: lec

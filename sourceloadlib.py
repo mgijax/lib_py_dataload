@@ -42,7 +42,6 @@ organismDict = {}	# dictionary of Organisms and keys
 segmentTypeDict = {}	# dictionary of Segment Types and keys
 sourceDict = {}		# dictionary of Source and keys
 strainDict = {}         # dictionary of Strain names and Strain keys
-strainIDDict = {}         # dictionary of Strain names and Strain keys
 tissueDict = {}         # dictionary of Tissue names and Tissue keys
 vectorTypeDict = {}	# dictionary of Vector Types and keys
 
@@ -295,42 +294,6 @@ def verifyStrain(
         for r in results:
             strainDict[strain] = r['_Strain_key']
             return r['_Strain_key'] 
-
-# Purpose: verifies the Strain returning the Strain ID
-# Returns: 0 if the Strain
-#		else the primary key of the Strain
-# Assumes: nothing
-# Effects: saves the Strain ID in a dictionary for faster lookup
-#          writes to the error log if the Strain is invalid
-# Throws: nothing
-
-def verifyStrainID(
-    strain,		# the Strain value from the input file (str.
-    lineNum,		# the line number (from the input file) on which this value was found
-    errorFile	 # error file (file descriptor)
-    ):
-
-    global strainIDDict
-
-    if strain in strainIDDict:
-        return strainIDDict[strain] 
-    else:
-        results = db.sql('select a.accID ' + \
-            'from PRB_Strain s, ACC_Accession a ' + \
-            'where s.strain = \'%s\' '% (strain) + \
-            'and s._Strain_key = a._Object_key ' + \
-            'and a._MGIType_key = 10 ' + \
-            'and a._LogicalDB_key = 1 ' + \
-            'and a.preferred = 1 ', 'auto')
-
-        if len(results) == 0:
-            if errorFile != None:
-                errorFile.write('Invalid Strain (line: %d) %s\n' % (lineNum, strain))
-            return 0
-
-        for r in results:
-            strainIDDict[strain] = r['accID']
-            return r['accID'] 
 
 # Purpose: verifies the Tissue
 # Returns: 0 if the Tissue
